@@ -3,13 +3,13 @@
 import type { Task } from '@entities/task';
 
 export interface FilterQuery {
-  tags?: string[];
-  project?: string;
-  priority?: string[];
-  minHours?: number;
-  dueRange?: 'today' | 'week' | 'overdue';
-  status?: string[];
-  text?: string;
+  tags?     : string[]
+  project?  : string
+  priority? : string[]
+  minHours? : number
+  dueRange? : 'today' | 'week' | 'overdue'
+  status?   : string[]
+  text?     : string
 }
 
 export function parseFilterQuery(query: string): FilterQuery {

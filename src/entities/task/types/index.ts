@@ -1,4 +1,5 @@
 // src/entities/task/types/index.ts
+
 export type TaskStatus = 'todo' | 'in-progress' | 'done'
 export type Priority = 'low' | 'medium' | 'high'
 

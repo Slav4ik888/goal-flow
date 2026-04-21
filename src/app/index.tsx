@@ -1,38 +1,65 @@
-import { useState } from 'react'
-import reactLogo from '@shared/assets/react.svg'
-import viteLogo from '@shared/assets/vite.svg'
-import heroImg from '@shared/assets/hero.png'
-import styles from './index.module.scss'
+// src/app/index.tsx
+
+import React from 'react';
+import { Provider } from 'react-redux';
+import { store, useAppSelector, useAppDispatch, setCommandPaletteOpen } from '@app/providers/store';
+import { Header } from '@widgets/header';
+import { GoalsSpace } from '@pages/goals';
+import { TasksSpace } from '@pages/tasks';
+import { ProjectsSpace } from '@pages/projects';
+import { CommandPalette } from '@widgets/command-palette';
+import { useHotkeys } from 'react-hotkeys-hook';
+import styles from './app.module.scss';
 
 
 
-export function App() {
-  const [count, setCount] = useState(0)
+const AppContent: React.FC = () => {
+  const dispatch = useAppDispatch();
+  const currentView = useAppSelector(state => state.ui.currentView);
+  const isPaletteOpen = useAppSelector(state => state.ui.isCommandPaletteOpen);
+
+  useHotkeys('cmd+k,ctrl+k', (e) => {
+    e.preventDefault();
+    dispatch(setCommandPaletteOpen(!isPaletteOpen));
+  });
+
+  useHotkeys('escape', () => {
+    if (isPaletteOpen) {
+      dispatch(setCommandPaletteOpen(false));
+    }
+  });
+
+  const renderContent = () => {
+    switch (currentView) {
+      case 'goals':
+        return <GoalsSpace />;
+      case 'projects':
+        return <ProjectsSpace />;
+      case 'tasks':
+        return <TasksSpace />;
+      default:
+        return <TasksSpace />;
+    }
+  };
 
   return (
-    <>
-      <section id="center" className={styles.center}>
-        <div className={styles.hero}>
-          <img src={heroImg} className={styles.base} width="170" height="179" alt="" />
-          <img src={reactLogo} className={styles.framework} alt="React logo" />
-          <img src={viteLogo} className={styles.vite} alt="Vite logo" />
-        </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.tsx</code> and save to test <code>HMR</code>
-          </p>
-        </div>
-        <button
-          className={styles.counter}
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
-      </section>
+    <div className={styles.app}>
+      <Header />
+      <main className={styles.main}>
+        {renderContent()}
+      </main>
+      <CommandPalette 
+        isOpen={isPaletteOpen} 
+        onClose={() => dispatch(setCommandPaletteOpen(false))}
+      />
+    </div>
+  );
+};
 
-      <div className={styles.ticks}></div>
-
-    </>
-  )
-}
+export const App: React.FC = () => {
+  return (
+    <Provider store={store}>
+      <AppContent />
+    </Provider>
+  );
+};
