@@ -1,15 +1,17 @@
 // src/widgets/header/index.tsx
 
 import React from 'react';
-import { useAppDispatch, useAppSelector, setCurrentView, setCommandPaletteOpen, ViewType } from '@app/store';
+import { useAppDispatch, useAppSelector } from '@app/providers/store';
+import { uiActions, type ViewType } from '@entities/ui';
 import styles from './index.module.scss';
 
 interface HeaderProps {
   currentView?: ViewType;
   onViewChange?: (view: ViewType) => void;
+  onQuickCapture: () => void;
 }
 
-export const Header: React.FC<HeaderProps> = ({ currentView: propView, onViewChange }) => {
+export const Header: React.FC<HeaderProps> = ({ currentView: propView, onViewChange, onQuickCapture }) => {
   const dispatch = useAppDispatch();
   const storeView = useAppSelector(state => state.ui.currentView);
   const currentView = propView ?? storeView;
@@ -18,12 +20,12 @@ export const Header: React.FC<HeaderProps> = ({ currentView: propView, onViewCha
     if (onViewChange) {
       onViewChange(view);
     } else {
-      dispatch(setCurrentView(view));
+      dispatch(uiActions.setCurrentView(view));
     }
   };
 
   const handleOpenPalette = () => {
-    dispatch(setCommandPaletteOpen(true));
+    dispatch(uiActions.setCommandPaletteOpen(true));
   };
 
   return (
@@ -59,7 +61,11 @@ export const Header: React.FC<HeaderProps> = ({ currentView: propView, onViewCha
           <span className={styles.shortcut}>⌘K</span>
           <span>Поиск</span>
         </button>
-        <button className={styles.quickAdd} onClick={handleOpenPalette}>
+        <button 
+          className={styles.quickAdd} 
+          onClick={onQuickCapture}
+          title="Быстрая задача (N)"
+        >
           +
         </button>
       </div>

@@ -3,6 +3,9 @@
 import { openDB } from 'idb';
 import type { IDBPDatabase } from 'idb';
 import type { Task } from '@entities/task';
+import type { Goal } from '@entities/goal';
+import type { Project } from '@entities/project';
+import type { TimeEntry } from '@entities/time-entry';
 
 let db: IDBPDatabase | null = null;
 
@@ -31,6 +34,7 @@ export async function initDB() {
   return db;
 }
 
+// Task operations
 export async function saveTask(task: Task) {
   const database = await initDB();
   await database.put('tasks', { ...task, updatedAt: Date.now() });
@@ -46,4 +50,85 @@ export async function getTasks(filter?: { projectId?: string; goalId?: string })
     tasks = tasks.filter(t => t.goalId === filter.goalId);
   }
   return tasks.sort((a, b) => b.updatedAt - a.updatedAt);
+}
+
+// Goal operations
+export async function saveGoal(goal: Goal) {
+  const database = await initDB();
+  await database.put('goals', { ...goal, updatedAt: Date.now() });
+}
+
+export async function getGoals(): Promise<Goal[]> {
+  const database = await initDB();
+  return await database.getAll('goals');
+}
+
+export async function deleteGoal(id: string) {
+  const database = await initDB();
+  await database.delete('goals', id);
+}
+
+export async function updateGoal(id: string, updates: Partial<Goal>) {
+  const database = await initDB();
+  const goal = await database.get('goals', id);
+  if (goal) {
+    const updated = { ...goal, ...updates, updatedAt: Date.now() };
+    await database.put('goals', updated);
+    return updated;
+  }
+  return null;
+}
+
+// Project operations
+export async function saveProject(project: Project) {
+  const database = await initDB();
+  await database.put('projects', { ...project, updatedAt: Date.now() });
+}
+
+export async function getProjects(): Promise<Project[]> {
+  const database = await initDB();
+  return await database.getAll('projects');
+}
+
+export async function deleteProject(id: string) {
+  const database = await initDB();
+  await database.delete('projects', id);
+}
+
+// TimeEntry operations
+export async function saveTimeEntry(entry: TimeEntry) {
+  const database = await initDB();
+  await database.put('timeEntries', entry);
+}
+
+export async function getTimeEntries(): Promise<TimeEntry[]> {
+  const database = await initDB();
+  return await database.getAll('timeEntries');
+}
+
+export async function deleteTimeEntry(id: string) {
+  const database = await initDB();
+  await database.delete('timeEntries', id);
+}
+
+export async function getActiveTimeEntry(): Promise<TimeEntry | null> {
+  const database = await initDB();
+  const entries = await database.getAll('timeEntries');
+  return entries.find(e => e.isRunning) || null;
+}
+
+export async function stopTimeEntry(id: string): Promise<TimeEntry | null> {
+  const database = await initDB();
+  const entry = await database.get('timeEntries', id);
+  if (entry && entry.isRunning) {
+    const stoppedEntry = {
+      ...entry,
+      endTime: Date.now(),
+      durationSeconds: Math.floor((Date.now() - entry.startTime) / 1000),
+      isRunning: false,
+    };
+    await database.put('timeEntries', stoppedEntry);
+    return stoppedEntry;
+  }
+  return null;
 }

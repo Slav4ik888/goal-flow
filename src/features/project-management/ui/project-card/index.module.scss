@@ -1,0 +1,287 @@
+// src/features/project-management/ui/project-card/index.module.scss
+.card {
+  background: white;
+  border-radius: 12px;
+  padding: 20px;
+  transition: all 0.2s;
+  border: 1px solid #e0e0e0;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+
+  &:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
+  }
+
+  &.archived {
+    opacity: 0.6;
+    background: #fafafa;
+  }
+
+  &.expanded {
+    transform: none;
+  }
+}
+
+.header {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.icon {
+  font-size: 28px;
+  line-height: 1;
+}
+
+.title {
+  flex: 1;
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: #333;
+  cursor: pointer;
+
+  &:hover {
+    color: #667eea;
+  }
+}
+
+.editContainer {
+  flex: 1;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.editInput {
+  flex: 1;
+  padding: 6px 10px;
+  border: 1px solid #667eea;
+  border-radius: 6px;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.saveButton,
+.cancelButton {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 18px;
+  padding: 4px 8px;
+  border-radius: 4px;
+}
+
+.saveButton {
+  color: #4caf50;
+
+  &:hover {
+    background: #e8f5e9;
+  }
+}
+
+.cancelButton {
+  color: #f44336;
+
+  &:hover {
+    background: #ffebee;
+  }
+}
+
+.actions {
+  display: flex;
+  gap: 4px;
+}
+
+.iconButton {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 18px;
+  padding: 4px 6px;
+  border-radius: 4px;
+  color: #999;
+  transition: all 0.1s;
+
+  &:hover {
+    background: #f0f0f0;
+    color: #333;
+  }
+}
+
+.deleteButton:hover {
+  color: #f44336;
+}
+
+.description {
+  color: #666;
+  font-size: 14px;
+  margin-bottom: 16px;
+  line-height: 1.5;
+}
+
+.relatedGoal {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 16px;
+  padding: 8px;
+  background: #f0f4ff;
+  border-radius: 6px;
+  font-size: 13px;
+}
+
+.relatedGoalLabel {
+  color: #666;
+  font-weight: 500;
+}
+
+.relatedGoalTitle {
+  color: #667eea;
+  font-weight: 500;
+}
+
+.completedBadge {
+  color: #4caf50;
+  font-weight: bold;
+}
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin-bottom: 16px;
+  padding: 12px;
+  background: #f9f9f9;
+  border-radius: 8px;
+}
+
+.stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.statValue {
+  font-size: 20px;
+  font-weight: bold;
+  color: #333;
+}
+
+.statLabel {
+  font-size: 11px;
+  color: #999;
+  text-transform: uppercase;
+}
+
+.progressSection {
+  margin-bottom: 16px;
+}
+
+.progressBar {
+  height: 6px;
+  background: #f0f0f0;
+  border-radius: 3px;
+  overflow: hidden;
+  margin-bottom: 8px;
+}
+
+.progressFill {
+  height: 100%;
+  background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+  transition: width 0.3s ease;
+}
+
+.progressText {
+  font-size: 12px;
+  color: #666;
+  text-align: center;
+}
+
+.tasksList {
+  margin-top: 16px;
+  padding: 12px;
+  background: #fafafa;
+  border-radius: 8px;
+}
+
+.tasksHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #666;
+}
+
+.viewAllButton {
+  background: none;
+  border: none;
+  color: #667eea;
+  cursor: pointer;
+  font-size: 12px;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+.tasks {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.taskItem {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  padding: 6px;
+  background: white;
+  border-radius: 6px;
+}
+
+.taskPending {
+  color: #ff9800;
+}
+
+.taskDone {
+  color: #4caf50;
+}
+
+.taskTitle {
+  flex: 1;
+  color: #333;
+}
+
+.taskTime {
+  font-size: 11px;
+  color: #999;
+  font-family: monospace;
+}
+
+.footer {
+  margin-top: 16px;
+  padding-top: 12px;
+  border-top: 1px solid #f0f0f0;
+}
+
+.expandButton {
+  width: 100%;
+  background: none;
+  border: none;
+  color: #667eea;
+  cursor: pointer;
+  font-size: 13px;
+  padding: 6px;
+  border-radius: 6px;
+  transition: all 0.2s;
+
+  &:hover {
+    background: #f0f0f0;
+  }
+}

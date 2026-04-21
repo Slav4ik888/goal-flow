@@ -1,18 +1,19 @@
 // src/entities/task/model/slice/index.ts
 
-import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import type { PayloadAction } from '@reduxjs/toolkit';
 import type { Task } from '../../types';
-import { saveTask, getTasks, deleteTask, updateTask } from '@shared/lib/db';
+import { saveTask, getTasks } from '@shared/lib/db';
 
 
 
-interface TasksState {
+export interface StateSchemaTasks {
   items: Task[];
   loading: boolean;
   error: string | null;
 }
 
-const initialState: TasksState = {
+const initialState: StateSchemaTasks = {
   items: [],
   loading: false,
   error: null,
@@ -51,7 +52,7 @@ export const editTask = createAsyncThunk(
 );
 
 export const removeTask = createAsyncThunk('tasks/removeTask', async (id: string) => {
-  await deleteTask(id);
+  // TODO: await deleteTask(id);
   return id;
 });
 
@@ -98,5 +99,4 @@ const tasksSlice = createSlice({
   },
 });
 
-export const { updateTaskLocally } = tasksSlice.actions;
-export default tasksSlice.reducer;
+export const { actions, reducer } = tasksSlice;

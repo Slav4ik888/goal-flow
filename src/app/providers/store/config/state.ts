@@ -1,0 +1,54 @@
+// import { AxiosInstance } from 'axios';
+// import { NavigateOptions, To } from 'react-router-dom';
+import type { Action, EnhancedStore, Reducer, ReducersMapObject } from '@reduxjs/toolkit';
+import type { StateSchemaGoals } from '@entities/goal';
+import type { StateSchemaTasks } from '@entities/task';
+import type { StateSchemaProjects } from '@entities/project';
+import type { StateSchemaTimeEntries } from '@entities/time-entry';
+import type { StateSchemaUI } from '@entities/ui';
+
+
+
+export interface StateSchema {
+  // Entities
+  ui          : StateSchemaUI
+  tasks       : StateSchemaTasks
+  goals       : StateSchemaGoals
+  projects    : StateSchemaProjects
+  timeEntries : StateSchemaTimeEntries
+  
+  // Async reducer
+  // signupPage?         : StateSchemaSignupPage
+}
+
+
+// export const selectProps = (_: StateSchema, props: any) => props;
+export const selectState = (state: StateSchema) => state;
+
+
+export type StateKey = keyof StateSchema;
+// @ts-ignore
+export type MountedReducers = OptionalRecord<StateKey, boolean> // True - mounted, false - not mounted
+
+export interface ReducerManager {
+  getReducerMap      : () => ReducersMapObject<StateSchema>
+  reduce             : (state: StateSchema, action: Action) => any // CombinedState<StateSchema>
+  add                : (key: StateKey, reducer: Reducer) => void
+  remove             : (key: StateKey) => void
+  getMountedReducers : () => MountedReducers
+}
+
+export interface ReduxStoreWithManager extends EnhancedStore<StateSchema> {
+  reducerManager: ReducerManager
+}
+
+export interface ThunkExtraArg {
+  // api       : AxiosInstance
+  // navigate? : (to: To, options?: NavigateOptions) => void
+}
+
+export interface ThunkConfig<T> {
+  rejectValue : T
+  extra       : ThunkExtraArg
+  state       : StateSchema
+}

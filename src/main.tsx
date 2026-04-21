@@ -1,14 +1,17 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { App } from '@app/index'
+import { StoreProvider } from '@app/providers/store'
 import './index.css'
 
 
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <App />
+    <StoreProvider>
+      <App />
+    </StoreProvider>
   </StrictMode>
 )
   
-// git add . && git commit -m "filled project" && git push -u origin main
+// git add . && git commit -m "continued fill project" && git push -u origin main

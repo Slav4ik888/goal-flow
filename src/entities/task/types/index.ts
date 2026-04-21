@@ -1,7 +1,7 @@
 // src/entities/task/types/index.ts
 
 export type TaskStatus = 'todo' | 'in-progress' | 'done'
-export type Priority = 'low' | 'medium' | 'high'
+export type Priority = 'P0' | 'P1' | 'P2' | 'P3'
 
 export interface Task {
   id               : string

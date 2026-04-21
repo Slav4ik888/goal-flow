@@ -1,31 +1,41 @@
 // src/app/index.tsx
 
-import React from 'react';
-import { Provider } from 'react-redux';
-import { store, useAppSelector, useAppDispatch, setCommandPaletteOpen } from '@app/providers/store';
+import React, { useState } from 'react';
+import { useAppSelector, useAppDispatch } from '@app/providers/store';
 import { Header } from '@widgets/header';
 import { GoalsSpace } from '@pages/goals';
 import { TasksSpace } from '@pages/tasks';
 import { ProjectsSpace } from '@pages/projects';
 import { CommandPalette } from '@widgets/command-palette';
 import { useHotkeys } from 'react-hotkeys-hook';
-import styles from './app.module.scss';
+import { uiActions } from '@entities/ui';
+import styles from './index.module.scss';
+import { QuickCapture } from '@features/quick-capture';
 
 
 
-const AppContent: React.FC = () => {
+export const App: React.FC = () => {
   const dispatch = useAppDispatch();
   const currentView = useAppSelector(state => state.ui.currentView);
   const isPaletteOpen = useAppSelector(state => state.ui.isCommandPaletteOpen);
+  const [isQuickCaptureOpen, setIsQuickCaptureOpen] = useState(false);
 
   useHotkeys('cmd+k,ctrl+k', (e) => {
     e.preventDefault();
-    dispatch(setCommandPaletteOpen(!isPaletteOpen));
+    dispatch(uiActions.setCommandPaletteOpen(!isPaletteOpen));
+  });
+
+  useHotkeys('n', (e) => {
+    e.preventDefault();
+    setIsQuickCaptureOpen(true);
   });
 
   useHotkeys('escape', () => {
     if (isPaletteOpen) {
-      dispatch(setCommandPaletteOpen(false));
+      dispatch(uiActions.setCommandPaletteOpen(false));
+    }
+    if (isQuickCaptureOpen) {
+      setIsQuickCaptureOpen(false);
     }
   });
 
@@ -44,22 +54,18 @@ const AppContent: React.FC = () => {
 
   return (
     <div className={styles.app}>
-      <Header />
+      <Header onQuickCapture={() => setIsQuickCaptureOpen(true)} />
       <main className={styles.main}>
         {renderContent()}
       </main>
       <CommandPalette 
         isOpen={isPaletteOpen} 
-        onClose={() => dispatch(setCommandPaletteOpen(false))}
+        onClose={() => dispatch(uiActions.setCommandPaletteOpen(false))}
+      />
+      <QuickCapture 
+        isOpen={isQuickCaptureOpen} 
+        onClose={() => setIsQuickCaptureOpen(false)}
       />
     </div>
-  );
-};
-
-export const App: React.FC = () => {
-  return (
-    <Provider store={store}>
-      <AppContent />
-    </Provider>
   );
 };

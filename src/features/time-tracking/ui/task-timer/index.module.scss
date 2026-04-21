@@ -1,1 +1,40 @@
 // src/features/time-tracking/ui/task-timer/index.module.scss
+.timer {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: #f5f5f5;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-family: monospace;
+  font-size: 13px;
+}
+
+.display {
+  color: #333;
+  min-width: 65px;
+  text-align: center;
+}
+
+.play,
+.stop {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  padding: 2px 4px;
+  border-radius: 4px;
+  transition: all 0.1s;
+
+  &:hover {
+    background: rgba(0, 0, 0, 0.1);
+  }
+}
+
+.play {
+  color: #4caf50;
+}
+
+.stop {
+  color: #ff9800;
+}

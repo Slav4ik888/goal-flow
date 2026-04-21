@@ -6,7 +6,12 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test:entities": "jest --detectOpenHandles --config ./config/jest/jest.config-entities.ts",
+    "test:features": "jest --detectOpenHandles --config ./config/jest/jest.config-features.ts",
+    "test:shared": "jest --detectOpenHandles --config ./config/jest/jest.config-shared.ts",
+    "test:widgets": "jest --detectOpenHandles --config ./config/jest/jest.config-widgets.ts",
+    "test:unit": "jest --config ./config/jest/jest.config.ts"
   },
   "dependencies": {
     "@reduxjs/toolkit": "2.11.2",
@@ -20,6 +25,9 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.39.4",
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.2",
+    "@types/jest": "^30.0.0",
     "@types/node": "^24.12.2",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
@@ -28,6 +36,8 @@
     "eslint-plugin-react-hooks": "^7.0.1",
     "eslint-plugin-react-refresh": "^0.5.2",
     "globals": "^17.4.0",
+    "jest": "^30.3.0",
+    "jest-environment-jsdom": "^30.3.0",
     "typescript": "~6.0.2",
     "typescript-eslint": "^8.58.0",
     "vite": "^8.0.4",
