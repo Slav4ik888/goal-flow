@@ -1,10 +1,10 @@
 // src/pages/tasks/index.tsx
 
 import React, { useEffect, useState } from 'react';
-import { useAppDispatch, useAppSelector } from '@app/store/hooks';
-import { fetchTasks, createTask, editTask, removeTask } from '@entities/task/model/tasks-slice';
-import { fetchProjects } from '@entities/project/model/projects-slice';
-import { fetchGoals } from '@entities/goal/model/goals-slice';
+import { useAppDispatch, useAppSelector } from '@app/providers/store';
+import { fetchTasks, createTask, editTask, removeTask, type Task } from '@entities/task';
+import { fetchProjects } from '@entities/project';
+import { fetchGoals } from '@entities/goal';
 import { TaskCard } from '@features/task-manager/ui/task-card';
 import { TaskForm } from '@features/task-manager/ui/task-form';
 import { FilterBar } from '@widgets/filters';
@@ -20,7 +20,7 @@ export const TasksSpace: React.FC = () => {
   const searchQuery = useAppSelector(state => state.ui.searchQuery);
   const loading = useAppSelector(state => state.tasks.loading);
   const [showForm, setShowForm] = useState(false);
-  const [editingTask, setEditingTask] = useState(null);
+  const [editingTask, setEditingTask] = useState<Task | null>(null);
 
   useEffect(() => {
     dispatch(fetchTasks());

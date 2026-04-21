@@ -7,7 +7,6 @@ import {
   saveTimeEntry, 
   getTimeEntries, 
   deleteTimeEntry, 
-  updateTimeEntry,
   getActiveTimeEntry,
   stopTimeEntry 
 } from '@shared/lib/db';

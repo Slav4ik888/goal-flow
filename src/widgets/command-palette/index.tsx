@@ -1,18 +1,11 @@
 // src/widgets/command-palette/index.tsx
 
 import React, { useState } from 'react';
-import { useAppDispatch, setCurrentView } from '@app/providers/store';
-import { exportAllData } from '@features/export';
+import { useAppDispatch, type AppDispatch } from '@app/providers/store';
 import { useHotkeys } from 'react-hotkeys-hook';
 import { getCommands } from './commands';
 import styles from './index.module.scss';
 
-
-
-const handleSelect = (cmd: Command) => {
-  cmd.action(dispatch);
-  onClose();
-};
 
 
 interface CommandPaletteProps {
@@ -36,8 +29,8 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({ isOpen, onClose 
     cmd.title.toLowerCase().includes(search.toLowerCase())
   );
 
-  const handleSelect = (action: () => void) => {
-    action();
+  const handleSelect = (action: (dispatch: AppDispatch) => void) => {
+    action(dispatch);
     onClose();
   };
 

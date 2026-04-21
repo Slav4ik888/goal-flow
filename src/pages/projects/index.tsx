@@ -1,8 +1,8 @@
 // src/pages/projects/index.tsx
 
 import React, { useEffect, useState } from 'react';
-import { useAppDispatch, useAppSelector } from '@app/store/hooks';
-import { fetchProjects, createProject, updateProject, deleteProject } from '@entities/project/model/projects-slice';
+import { useAppDispatch, useAppSelector } from '@app/providers/store';
+import { fetchProjects, createProject } from '@entities/project';
 import { ProjectCard } from '@features/project-management/ui/project-card';
 import { ProjectForm } from '@features/project-management/ui/project-form';
 import styles from './index.module.scss';

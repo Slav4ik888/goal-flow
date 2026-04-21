@@ -1,9 +1,9 @@
 // src/pages/goals/index.tsx
 
 import React, { useEffect } from 'react';
-import { useAppDispatch, useAppSelector } from '@app/store/hooks';
-import { fetchGoals, createGoal, updateGoal } from '@entities/goal/model/goals-slice';
-import { fetchTasks } from '@entities/task/model/tasks-slice';
+import { useAppDispatch, useAppSelector } from '@app/providers/store';
+import { fetchGoals, createGoal } from '@entities/goal';
+import { fetchTasks } from '@entities/task';
 import { GoalCard } from '@features/goal-tracking/ui/goal-card';
 import { GoalForm } from '@features/goal-tracking/ui/goal-form';
 import styles from './index.module.scss';

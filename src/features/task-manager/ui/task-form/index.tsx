@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import type { Priority, TaskStatus } from '@entities/task';
 import type { Goal } from '@entities/goal/types';
 import type { Project } from '@entities/project/types';
-import styles from './task-form.module.scss';
+import styles from './index.module.scss';
 
 
 interface TaskFormProps {

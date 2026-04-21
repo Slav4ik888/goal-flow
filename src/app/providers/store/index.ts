@@ -2,3 +2,4 @@
 
 export { StoreProvider } from './ui'
 export { useAppDispatch, useAppSelector } from './config/hooks'
+export type { AppDispatch } from './config/store'

@@ -1,9 +1,9 @@
 // src/widgets/command-palette/commands.ts
 
 import type { AppDispatch } from '@app/providers/store';
-import { setCurrentView } from '@app/providers/store';
+import { uiActions } from '@entities/ui';
 import { exportAllData } from '@features/export/lib/backup';
-import { createTask } from '@entities/task/model/tasks-slice';
+// import { createTask } from '@entities/task';
 
 
 export interface Command {
@@ -18,7 +18,7 @@ export const getCommands = (): Command[] => [
     id: 'new-task',
     title: 'Новая задача',
     shortcut: 'N',
-    action: (dispatch) => {
+    action: () => {
       // Открыть модалку создания задачи
       console.log('Open new task modal');
     }
@@ -28,7 +28,7 @@ export const getCommands = (): Command[] => [
     title: 'Новая цель',
     shortcut: 'G',
     action: (dispatch) => {
-      dispatch(setCurrentView('goals'));
+      dispatch(uiActions.setCurrentView('goals'));
     }
   },
   {
@@ -36,7 +36,7 @@ export const getCommands = (): Command[] => [
     title: 'Новый проект',
     shortcut: 'P',
     action: (dispatch) => {
-      dispatch(setCurrentView('projects'));
+      dispatch(uiActions.setCurrentView('projects'));
     }
   },
   {

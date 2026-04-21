@@ -8,6 +8,7 @@ import { timeEntriesReducer } from '@entities/time-entry';
 import { uiReducer } from '@entities/ui';
 import type { StateSchema } from './state';
 import { createReducerManager } from './reducer-manager';
+import { cfg } from '@app/config';
 
 
 export function createReduxStore(
@@ -32,8 +33,7 @@ export function createReduxStore(
 
   const store = configureStore({
     reducer        : reducerManager.reduce,
-  // @ts-ignore
-    devTools       : __IS_DEV__,
+    devTools       : cfg.IS_DEV,
     preloadedState : initialState || {},
     middleware     : (getDefaultMiddleware) => getDefaultMiddleware({
       serializableCheck: false, // для работы с Date
