@@ -86,6 +86,7 @@ export const TaskCard: React.FC<TaskCardProps> = ({ task, onEdit, onDelete, onSt
       <div className={styles.mainRow}>
         <button 
           className={styles.statusButton}
+          title="Перевести задачу на следующий этап"
           onClick={() => {
             const nextStatus: Record<TaskStatus, TaskStatus> = {
               'todo': 'in-progress',

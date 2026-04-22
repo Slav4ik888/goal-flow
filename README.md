@@ -1,36 +1,5 @@
-src/
-├── app/ # Инициализация приложения
-│ ├── providers/ # IndexedDB provider, Theme provider
-│ ├── store/ # глобальное состояние
-│ └── main.tsx
-├── pages/
-│ ├── dashboard/ # Главная (список задач)
-│ ├── goals/ # GoalsSpace
-│ ├── projects/ # ProjectsSpace
-│ ├── tasks/ # TasksSpace
-│ ├── analytics/ # Отчеты по времени
-│ └── settings/ # Настройки и экспорт
-├── widgets/
-│ ├── header/ # Header с большими кнопками
-│ ├── breadcrumbs/ # Навигация по иерархии
-│ ├── filters/ # Панель фильтров
-│ └── command-palette/ # Cmd+K палитра, Поиск и быстрые действия
-├── features/
-│ ├── task-manager/ # CRUD задач
-│ ├── time-tracking/ # Таймер + ручной ввод
-│ ├── goal-tracking/ # Прогресс целей
-│ └── ai-assistant/ # AI подсказки (опционально)
-├── entities/
-│ ├── task/ # Task тип, store, hooks
-│ ├── project/ # Project сущность
-│ ├── goal/ # Goal сущность
-│ └── time-entry/ # TimeEntry сущность
-└── shared/
-├── ui/ # Button, Modal, Input
-├── lib/ # idb, date helpers
-├── styles/ # Глобальные стили
-├── hooks/ # Общие хуки
-└── config/ # hotkeys, constants
+Я готов к следующему шагу — реализации экспорта/импорта и AI-фич
+
 
 1. Иерархия (Цели → Проекты → Задачи)
    Ввехру Header - в нём большие кнопки: Цели, Проекты, Задачи.

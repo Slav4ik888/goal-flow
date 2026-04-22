@@ -10,6 +10,8 @@ import type { TimeEntry } from '@entities/time-entry';
 let db: IDBPDatabase | null = null;
 
 export async function initDB() {
+  if (db) return db;
+  
   db = await openDB('GoalFlowDB', 1, {
     upgrade(db) {
       if (!db.objectStoreNames.contains('tasks')) {
@@ -31,8 +33,27 @@ export async function initDB() {
       }
     },
   });
+  
   return db;
 }
+
+// Функция очистки без удаления базы данных
+export async function clearAllStores() {
+  const database = await initDB();
+  
+  const stores = ['tasks', 'goals', 'projects', 'timeEntries'];
+  
+  const tx = database.transaction(stores, 'readwrite');
+  
+  for (const store of stores) {
+    await tx.objectStore(store).clear();
+  }
+  
+  await tx.done;
+  console.log('All stores cleared successfully');
+}
+
+
 
 // Task operations
 export async function saveTask(task: Task) {
@@ -50,6 +71,11 @@ export async function getTasks(filter?: { projectId?: string; goalId?: string })
     tasks = tasks.filter(t => t.goalId === filter.goalId);
   }
   return tasks.sort((a, b) => b.updatedAt - a.updatedAt);
+}
+
+export async function deleteTask(id: string) {
+  const database = await initDB();
+  await database.delete('tasks', id);
 }
 
 // Goal operations

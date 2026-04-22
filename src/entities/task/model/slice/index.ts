@@ -3,7 +3,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import type { PayloadAction } from '@reduxjs/toolkit';
 import type { Task } from '../../types';
-import { saveTask, getTasks } from '@shared/lib/db';
+import { saveTask, getTasks, deleteTask } from '@shared/lib/db';
 
 
 
@@ -52,7 +52,7 @@ export const editTask = createAsyncThunk(
 );
 
 export const removeTask = createAsyncThunk('tasks/removeTask', async (id: string) => {
-  // TODO: await deleteTask(id);
+  await deleteTask(id);
   return id;
 });
 
