@@ -15,6 +15,7 @@ interface TaskCardProps {
   onEdit: () => void;
   onDelete: () => void;
   onStatusChange: (status: TaskStatus) => void;
+  onClick: () => void;
 }
 
 const priorityColors: Record<Priority, string> = {
@@ -31,20 +32,28 @@ const priorityLabels: Record<Priority, string> = {
   P3: 'Низкий',
 };
 
-export const TaskCard: React.FC<TaskCardProps> = ({ task, onEdit, onDelete, onStatusChange }) => {
+export const TaskCard: React.FC<TaskCardProps> = ({ task, onEdit, onDelete, onStatusChange, onClick }) => {
   const dispatch = useAppDispatch();
   const activeTimeEntry = useAppSelector(state => state.timeEntries.activeTimeEntry);
   const [isExpanded, setIsExpanded] = useState(false);
   const isTimerRunning = activeTimeEntry?.taskId === task.id;
 
-  const handleTimeUpdate = async (seconds: number) => {
+  const handleTaskClick = () => {
+    if (onClick) {
+      onClick();
+    }
+  };
+  
+  const handleTimeUpdate = async (seconds: number) => { 
     await dispatch(editTask({ 
       id: task.id, 
       updates: { timeSpentSeconds: seconds } 
     }));
   };
 
-  const handleStartTimer = async () => {
+  const handleStartTimer = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    
     if (isTimerRunning) {
       // Остановить таймер
       if (activeTimeEntry) {
@@ -82,12 +91,16 @@ export const TaskCard: React.FC<TaskCardProps> = ({ task, onEdit, onDelete, onSt
   const isOverdue = task.dueDate && task.dueDate < Date.now() && task.status !== 'done';
 
   return (
-    <div className={`${styles.card} ${styles[task.status]} ${isExpanded ? styles.expanded : ''}`}>
+    <div
+      className={`${styles.card} ${styles[task.status]} ${isExpanded ? styles.expanded : ''}`}
+      onClick={handleTaskClick}
+    >
       <div className={styles.mainRow}>
         <button 
           className={styles.statusButton}
           title="Перевести задачу на следующий этап"
-          onClick={() => {
+          onClick={(e) => {
+            e.stopPropagation();
             const nextStatus: Record<TaskStatus, TaskStatus> = {
               'todo': 'in-progress',
               'in-progress': 'done',
@@ -144,15 +157,36 @@ export const TaskCard: React.FC<TaskCardProps> = ({ task, onEdit, onDelete, onSt
             onStartStop={handleStartTimer}
           />
           
-          <button className={styles.iconButton} onClick={() => setIsExpanded(!isExpanded)} title="Подробнее">
+          <button
+            className={styles.iconButton}
+            title="Подробнее"
+            onClick={(e) => {
+              e.stopPropagation();
+              setIsExpanded(!isExpanded)
+            }}
+          >
             {isExpanded ? '▲' : '▼'}
           </button>
           
-          <button className={styles.iconButton} onClick={onEdit} title="Редактировать">
+          <button
+            className={styles.iconButton}
+            title="Редактировать"
+            onClick={(e) => {
+              e.stopPropagation();
+              onEdit();
+            }}
+          >
             ✎
           </button>
           
-          <button className={`${styles.iconButton} ${styles.deleteButton}`} onClick={onDelete} title="Удалить">
+          <button
+            className={`${styles.iconButton} ${styles.deleteButton}`}
+            title="Удалить"
+            onClick={(e) => {
+              e.stopPropagation();
+              onDelete();
+            }}
+          >
             ×
           </button>
         </div>

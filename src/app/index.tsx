@@ -13,6 +13,7 @@ import { QuickCapture } from '@features/quick-capture';
 import { initDB } from '@shared/lib/db';
 import { initializeMockData } from '@shared/mocks/init';
 import styles from './index.module.scss';
+import { Breadcrumbs } from '@widgets/breadcrumbs';
 
 
 
@@ -87,6 +88,7 @@ export const App: React.FC = () => {
   return (
     <div className={styles.app}>
       <Header onQuickCapture={() => setIsQuickCaptureOpen(true)} />
+      <Breadcrumbs />
       <main className={styles.main}>
         {renderContent()}
       </main>

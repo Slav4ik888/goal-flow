@@ -9,7 +9,10 @@ import { TaskCard } from '@features/task-manager/ui/task-card';
 import { TaskForm } from '@features/task-manager/ui/task-form';
 import { FilterBar } from '@widgets/filters';
 import { parseFilterQuery, filterTasks } from '@features/filters/lib/query-parser';
+import { uiActions } from '@entities/ui';
 import styles from './index.module.scss';
+
+
 
 export const TasksSpace: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -27,13 +30,13 @@ export const TasksSpace: React.FC = () => {
     dispatch(fetchProjects());
     dispatch(fetchGoals());
   }, [dispatch]);
-
+  
   const filteredTasks = React.useMemo(() => {
     let result = tasks;
     
     if (filterQuery) {
       const parsed = parseFilterQuery(filterQuery);
-      result = filterTasks(result, parsed);
+      result = filterTasks(result, parsed, projects, goals);
     }
     
     if (searchQuery) {
@@ -44,8 +47,17 @@ export const TasksSpace: React.FC = () => {
     }
     
     return result;
-  }, [tasks, filterQuery, searchQuery]);
+  }, [tasks, filterQuery, searchQuery, projects, goals]);
 
+
+  const handleTaskClick = (task: Task) => {
+    dispatch(uiActions.navigateToTask({ 
+      id: task.id, 
+      title: task.title,
+      projectId: task.projectId 
+    }));
+  };
+  
   const handleCreateTask = async (data: any) => {
     await dispatch(createTask(data));
     setShowForm(false);
@@ -123,6 +135,7 @@ export const TasksSpace: React.FC = () => {
                 onEdit={() => setEditingTask(task)}
                 onDelete={() => handleDeleteTask(task.id)}
                 onStatusChange={(status) => handleUpdateTask(task.id, { status })}
+                onClick={() => handleTaskClick(task)}
               />
             ))}
           </div>
@@ -142,6 +155,7 @@ export const TasksSpace: React.FC = () => {
                 onEdit={() => setEditingTask(task)}
                 onDelete={() => handleDeleteTask(task.id)}
                 onStatusChange={(status) => handleUpdateTask(task.id, { status })}
+                onClick={() => handleTaskClick(task)}
               />
             ))}
           </div>
@@ -161,6 +175,7 @@ export const TasksSpace: React.FC = () => {
                 onEdit={() => setEditingTask(task)}
                 onDelete={() => handleDeleteTask(task.id)}
                 onStatusChange={(status) => handleUpdateTask(task.id, { status })}
+                onClick={() => handleTaskClick(task)}
               />
             ))}
           </div>

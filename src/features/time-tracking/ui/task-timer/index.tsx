@@ -9,7 +9,7 @@ interface TaskTimerProps {
   initialSeconds: number;
   onUpdate: (seconds: number) => void;
   isRunning: boolean;
-  onStartStop: () => void;
+  onStartStop: (e: React.MouseEvent) => void;
 }
 
 export const TaskTimer: React.FC<TaskTimerProps> = ({ 
@@ -52,7 +52,7 @@ export const TaskTimer: React.FC<TaskTimerProps> = ({
   return (
     <div className={styles.timer}>
       <span className={styles.display}>{formatTime(displaySeconds)}</span>
-      <button onClick={onStartStop} className={isRunning ? styles.stop : styles.play}>
+      <button onClick={(e) => onStartStop(e)} className={isRunning ? styles.stop : styles.play}>
         {isRunning ? '⏸' : '▶'}
       </button>
     </div>

@@ -2,11 +2,14 @@
 
 import React, { useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from '@app/providers/store';
-import { fetchGoals, createGoal } from '@entities/goal';
+import { fetchGoals, createGoal, type Goal } from '@entities/goal';
 import { fetchTasks } from '@entities/task';
 import { GoalCard } from '@features/goal-tracking/ui/goal-card';
 import { GoalForm } from '@features/goal-tracking/ui/goal-form';
+import { uiActions } from '@entities/ui';
 import styles from './index.module.scss';
+
+
 
 export const GoalsSpace: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -23,6 +26,12 @@ export const GoalsSpace: React.FC = () => {
   const handleCreateGoal = async (data: { title: string; description?: string; targetDate?: number }) => {
     await dispatch(createGoal(data));
     setShowForm(false);
+  };
+  
+  const handleGoalClick = (goal: Goal) => {
+    dispatch(uiActions.navigateToGoal({ id: goal.id, title: goal.title }));
+    // Также можно фильтровать задачи по этой цели
+    dispatch(uiActions.setFilterQuery(`goal:${goal.id}`));
   };
 
   const activeGoals = goals.filter(g => g.status === 'active');
@@ -55,7 +64,12 @@ export const GoalsSpace: React.FC = () => {
         <h2>Активные цели</h2>
         <div className={styles.goalsGrid}>
           {activeGoals.map(goal => (
-            <GoalCard key={goal.id} goal={goal} tasks={tasks} />
+            <GoalCard
+              key={goal.id}
+              goal={goal}
+              tasks={tasks}
+              onClick={() => handleGoalClick(goal)}
+            />
           ))}
           {activeGoals.length === 0 && (
             <div className={styles.emptyState}>
@@ -70,7 +84,12 @@ export const GoalsSpace: React.FC = () => {
           <h2>Выполненные цели</h2>
           <div className={styles.goalsGrid}>
             {completedGoals.map(goal => (
-              <GoalCard key={goal.id} goal={goal} tasks={tasks} />
+              <GoalCard
+                key={goal.id}
+                goal={goal}
+                tasks={tasks}
+                onClick={() => handleGoalClick(goal)}
+              />
             ))}
           </div>
         </div>

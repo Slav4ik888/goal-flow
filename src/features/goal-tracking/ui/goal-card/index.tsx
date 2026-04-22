@@ -14,9 +14,10 @@ interface GoalCardProps {
   goal: Goal;
   tasks: Task[];
   onEdit?: (goal: Goal) => void;
+  onClick?: () => void;
 }
 
-export const GoalCard: React.FC<GoalCardProps> = ({ goal, tasks, onEdit }) => {
+export const GoalCard: React.FC<GoalCardProps> = ({ goal, tasks, onClick }) => {
   const dispatch = useAppDispatch();
   const [isExpanded, setIsExpanded] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
@@ -27,18 +28,27 @@ export const GoalCard: React.FC<GoalCardProps> = ({ goal, tasks, onEdit }) => {
   const completedTasks = relatedTasks.filter(t => t.status === 'done');
   const inProgressTasks = relatedTasks.filter(t => t.status === 'in-progress');
 
-  const handleStatusToggle = async () => {
+  const handleCardClick = () => {
+    if (onClick) {
+      onClick();
+    }
+  };
+  
+  const handleStatusToggle = async (e: React.MouseEvent) => {
+    e.stopPropagation();
     const newStatus = goal.status === 'active' ? 'completed' : 'active';
     await dispatch(editGoal({ id: goal.id, updates: { status: newStatus } }));
   };
 
-  const handleDelete = async () => {
+  const handleDelete = async (e: React.MouseEvent) => {
+    e.stopPropagation();
     if (confirm(`Удалить цель "${goal.title}"? Связанные задачи не будут удалены.`)) {
       await dispatch(removeGoal(goal.id));
     }
   };
 
-  const handleSaveEdit = async () => {
+  const handleSaveEdit = async (e: React.KeyboardEvent<HTMLInputElement> | React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    e.stopPropagation();
     if (editTitle.trim() && editTitle !== goal.title) {
       await dispatch(editGoal({ id: goal.id, updates: { title: editTitle } }));
     }
@@ -62,7 +72,10 @@ export const GoalCard: React.FC<GoalCardProps> = ({ goal, tasks, onEdit }) => {
   const isOverdue = goal.targetDate && goal.targetDate < Date.now() && goal.status !== 'completed';
 
   return (
-    <div className={`${styles.card} ${styles[goal.status]} ${isExpanded ? styles.expanded : ''}`}>
+    <div
+      className={`${styles.card} ${styles[goal.status]} ${isExpanded ? styles.expanded : ''}`}
+      onClick={handleCardClick}
+    >
       <div className={styles.header}>
         <div className={styles.statusIcon}>{getStatusIcon()}</div>
         
@@ -74,7 +87,7 @@ export const GoalCard: React.FC<GoalCardProps> = ({ goal, tasks, onEdit }) => {
               onChange={e => setEditTitle(e.target.value)}
               className={styles.editInput}
               autoFocus
-              onKeyPress={e => e.key === 'Enter' && handleSaveEdit()}
+              onKeyPress={e => e.key === 'Enter' && handleSaveEdit(e)}
             />
             <button onClick={handleSaveEdit} className={styles.saveButton}>✓</button>
             <button onClick={() => setIsEditing(false)} className={styles.cancelButton}>✗</button>
@@ -86,17 +99,20 @@ export const GoalCard: React.FC<GoalCardProps> = ({ goal, tasks, onEdit }) => {
         )}
 
         <div className={styles.actions}>
-          <button 
-            onClick={() => setIsEditing(true)} 
+          <button
             className={styles.iconButton}
             title="Редактировать"
+            onClick={(e) => {
+              e.stopPropagation();
+              setIsEditing(true);
+            }}
           >
             ✎
           </button>
           <button 
-            onClick={handleDelete} 
             className={`${styles.iconButton} ${styles.deleteButton}`}
             title="Удалить"
+            onClick={(e) => handleDelete(e)}
           >
             ×
           </button>
@@ -170,20 +186,23 @@ export const GoalCard: React.FC<GoalCardProps> = ({ goal, tasks, onEdit }) => {
 
       <div className={styles.footer}>
         <button 
-          onClick={() => setIsExpanded(!isExpanded)} 
           className={styles.expandButton}
+          onClick={(e) => {
+            e.stopPropagation();
+            setIsExpanded(!isExpanded)
+          }}
         >
           {isExpanded ? 'Скрыть детали ▲' : 'Показать детали ▼'}
         </button>
         
         {goal.status === 'active' && (
-          <button onClick={handleStatusToggle} className={styles.completeButton}>
+          <button onClick={(e) => handleStatusToggle(e)} className={styles.completeButton}>
             Отметить выполненной
           </button>
         )}
         
         {goal.status === 'completed' && (
-          <button onClick={handleStatusToggle} className={styles.reactivateButton}>
+          <button onClick={(e) => handleStatusToggle(e)} className={styles.reactivateButton}>
             Реактивировать
           </button>
         )}

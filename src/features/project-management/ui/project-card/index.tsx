@@ -11,9 +11,10 @@ import styles from './index.module.scss';
 interface ProjectCardProps {
   project: Project;
   onEdit?: (project: Project) => void;
+  onClick?: () => void;
 }
 
-export const ProjectCard: React.FC<ProjectCardProps> = ({ project, onEdit }) => {
+export const ProjectCard: React.FC<ProjectCardProps> = ({ project, onClick }) => {
   const dispatch = useAppDispatch();
   const tasks = useAppSelector(state => state.tasks.items);
   const goals = useAppSelector(state => state.goals.items);
@@ -31,19 +32,27 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({ project, onEdit }) => 
     ? (completedTasks.length / relatedTasks.length) * 100 
     : 0;
 
-  const handleArchive = async () => {
+  const handleProjectClick = () => {
+    if (onClick) {
+      onClick();
+    }
+  };
+  const handleArchive = async (e: React.MouseEvent) => {
+    e.stopPropagation();
     if (confirm(`Архивировать проект "${project.title}"?`)) {
       await dispatch(archiveProject(project.id));
     }
   };
 
-  const handleDelete = async () => {
+  const handleDelete = async (e: React.MouseEvent) => {
+    e.stopPropagation();
     if (confirm(`Удалить проект "${project.title}"? Связанные задачи не будут удалены.`)) {
       await dispatch(removeProject(project.id));
     }
   };
 
-  const handleSaveEdit = async () => {
+  const handleSaveEdit = async (e: React.KeyboardEvent<HTMLInputElement> | React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    e.stopPropagation();
     if (editTitle.trim() && editTitle !== project.title) {
       await dispatch(editProject({ id: project.id, updates: { title: editTitle } }));
     }
@@ -57,7 +66,10 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({ project, onEdit }) => 
   };
 
   return (
-    <div className={`${styles.card} ${project.status === 'archived' ? styles.archived : ''} ${isExpanded ? styles.expanded : ''}`}>
+    <div
+      className={`${styles.card} ${project.status === 'archived' ? styles.archived : ''} ${isExpanded ? styles.expanded : ''}`}
+      onClick={handleProjectClick}
+    >
       <div className={styles.header}>
         <div className={styles.icon}>📁</div>
         
@@ -69,10 +81,18 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({ project, onEdit }) => 
               onChange={e => setEditTitle(e.target.value)}
               className={styles.editInput}
               autoFocus
-              onKeyPress={e => e.key === 'Enter' && handleSaveEdit()}
+              onKeyPress={e => e.key === 'Enter' && handleSaveEdit(e)}
             />
-            <button onClick={handleSaveEdit} className={styles.saveButton}>✓</button>
-            <button onClick={() => setIsEditing(false)} className={styles.cancelButton}>✗</button>
+            <button onClick={(e) => handleSaveEdit(e)} className={styles.saveButton}>✓</button>
+            <button
+              className={styles.cancelButton}
+              onClick={(e) => {
+                e.stopPropagation();
+                setIsEditing(false);
+              }}
+            >
+              ✗
+            </button>
           </div>
         ) : (
           <h3 className={styles.title} onClick={() => setIsExpanded(!isExpanded)}>
@@ -81,26 +101,29 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({ project, onEdit }) => 
         )}
 
         <div className={styles.actions}>
-          <button 
-            onClick={() => setIsEditing(true)} 
+          <button
             className={styles.iconButton}
             title="Редактировать"
+            onClick={(e) => {
+              e.stopPropagation();
+              setIsEditing(true);
+            }}
           >
             ✎
           </button>
           {project.status === 'active' && (
             <button 
-              onClick={handleArchive} 
               className={styles.iconButton}
               title="Архивировать"
+              onClick={(e) => handleArchive(e)} 
             >
               📦
             </button>
           )}
           <button 
-            onClick={handleDelete} 
             className={`${styles.iconButton} ${styles.deleteButton}`}
             title="Удалить"
+            onClick={(e) => handleDelete(e)} 
           >
             ×
           </button>
@@ -176,8 +199,11 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({ project, onEdit }) => 
 
       <div className={styles.footer}>
         <button 
-          onClick={() => setIsExpanded(!isExpanded)} 
           className={styles.expandButton}
+          onClick={(e) => {
+            e.stopPropagation();
+            setIsExpanded(!isExpanded);
+          }}
         >
           {isExpanded ? 'Скрыть задачи ▲' : `Показать задачи (${relatedTasks.length}) ▼`}
         </button>
