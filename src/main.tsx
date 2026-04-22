@@ -14,4 +14,4 @@ createRoot(document.getElementById('root')!).render(
   </StrictMode>
 )
   
-// git add . && git commit -m "refacted Breadcrumbs" && git push -u origin main
+// git add . && git commit -m "refacted Breadcrumbs & uiSlice" && git push -u origin main

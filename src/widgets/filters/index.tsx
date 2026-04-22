@@ -12,6 +12,8 @@ export const FilterBar: React.FC = () => {
   const searchQuery = useAppSelector(state => state.ui.searchQuery);
   const [showSyntax, setShowSyntax] = useState(false);
   const [localFilterInput, setLocalFilterInput] = useState(filterQuery);
+  const selectedGoalId = useAppSelector(state => state.ui.selectedGoalId);
+  const selectedProjectId = useAppSelector(state => state.ui.selectedProjectId);
 
   const activeFilters = getActiveFilters(filterQuery);
   const hasActiveFilters = filterQuery !== '' || searchQuery !== '';
@@ -71,6 +73,15 @@ export const FilterBar: React.FC = () => {
         )}
       </div>
 
+      { (selectedGoalId || selectedProjectId) && (
+        <button 
+          onClick={() => dispatch(uiActions.goToAllTasks())}
+          className={styles.resetNavigationButton}
+        >
+          ← Показать все задачи
+        </button>
+      )}
+      
       {/* Фильтр с синтаксисом */}
       <div className={styles.filterSection}>
         <div className={styles.filterIcon}>🎛️</div>
@@ -138,6 +149,18 @@ export const FilterBar: React.FC = () => {
               Очистить всё
             </button>
           )}
+        </div>
+      )}
+      
+      {/* Показываем дополнительную информацию о текущей навигации */}
+      {selectedGoalId && (
+        <div className={styles.navigationInfo}>
+          🎯 Показаны задачи цели
+        </div>
+      )}
+      {selectedProjectId && (
+        <div className={styles.navigationInfo}>
+          📁 Показаны задачи проекта
         </div>
       )}
 

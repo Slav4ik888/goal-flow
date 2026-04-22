@@ -93,7 +93,7 @@ export const TaskCard: React.FC<TaskCardProps> = ({ task, onEdit, onDelete, onSt
   return (
     <div
       className={`${styles.card} ${styles[task.status]} ${isExpanded ? styles.expanded : ''}`}
-      onClick={handleTaskClick}
+      onDoubleClick={handleTaskClick}
     >
       <div className={styles.mainRow}>
         <button 

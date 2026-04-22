@@ -24,6 +24,7 @@ export const TasksSpace: React.FC = () => {
   const loading = useAppSelector(state => state.tasks.loading);
   const [showForm, setShowForm] = useState(false);
   const [editingTask, setEditingTask] = useState<Task | null>(null);
+  const [selectedTaskDetail, setSelectedTaskDetail] = useState<Task | null>(null);
 
   useEffect(() => {
     dispatch(fetchTasks());
@@ -51,6 +52,8 @@ export const TasksSpace: React.FC = () => {
 
 
   const handleTaskClick = (task: Task) => {
+    setSelectedTaskDetail(task);
+    // или использовать navigateToTask для Breadcrumbs
     dispatch(uiActions.navigateToTask({ 
       id: task.id, 
       title: task.title,
@@ -185,6 +188,29 @@ export const TasksSpace: React.FC = () => {
       {filteredTasks.length === 0 && !loading && (
         <div className={styles.emptyState}>
           {filterQuery || searchQuery ? 'Ничего не найдено' : 'Нет задач. Создайте первую задачу!'}
+        </div>
+      )}
+      
+      {/* Модалка с деталями задачи */}
+      {selectedTaskDetail && (
+        <div className={styles.modal} onClick={() => setSelectedTaskDetail(null)}>
+          <div className={styles.modalContent} onClick={e => e.stopPropagation()}>
+            <h2>{selectedTaskDetail.title}</h2>
+            {/* Полная информация о задаче */}
+            <div className={styles.taskDetails}>
+              <p><strong>Описание:</strong> {selectedTaskDetail.description || 'Нет описания'}</p>
+              <p><strong>Приоритет:</strong> {selectedTaskDetail.priority}</p>
+              <p><strong>Статус:</strong> {selectedTaskDetail.status}</p>
+              <p><strong>Время:</strong> {Math.floor(selectedTaskDetail.timeSpentSeconds / 3600)}ч</p>
+              {selectedTaskDetail.dueDate && (
+                <p><strong>Дедлайн:</strong> {new Date(selectedTaskDetail.dueDate).toLocaleDateString()}</p>
+              )}
+              <p><strong>Теги:</strong> {selectedTaskDetail.tags.join(', ')}</p>
+            </div>
+            <button onClick={() => setSelectedTaskDetail(null)} className={styles.closeButton}>
+              Закрыть
+            </button>
+          </div>
         </div>
       )}
     </div>

@@ -44,13 +44,6 @@
   font-size: 16px;
 }
 
-.backButton {
-  &::before {
-    content: '←';
-    margin-right: 4px;
-  }
-}
-
 .trail {
   flex: 1;
   display: flex;
