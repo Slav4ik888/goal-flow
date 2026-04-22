@@ -14,4 +14,4 @@ createRoot(document.getElementById('root')!).render(
   </StrictMode>
 )
   
-// git add . && git commit -m "added mock data" && git push -u origin main
+// git add . && git commit -m "prepeare for LLM" && git push -u origin main
