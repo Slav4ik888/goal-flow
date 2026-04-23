@@ -1,5 +1,5 @@
 // src/widgets/header/index.module.scss
-// src/widgets/header/index.module.scss
+
 .header {
   display: flex;
   align-items: center;
@@ -374,5 +374,33 @@
   .clearConfirmButton,
   .mockConfirmButton {
     width: 100%;
+  }
+}
+
+
+// Settings-button
+.settingsButton {
+  width: 36px;
+  height: 36px;
+  background: rgba(156, 39, 176, 0.3);
+  border: none;
+  border-radius: 8px;
+  color: white;
+  font-size: 18px;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &:hover {
+    background: rgba(156, 39, 176, 0.5);
+    transform: scale(1.05);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
   }
 }

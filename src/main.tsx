@@ -3,15 +3,18 @@ import { createRoot } from 'react-dom/client'
 import { App } from '@app/index'
 import { StoreProvider } from '@app/providers/store'
 import './index.css'
+import { BrowserRouter } from 'react-router-dom'
 
 
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <StoreProvider>
-      <App />
+      <BrowserRouter>
+        <App />
+      </BrowserRouter>
     </StoreProvider>
   </StrictMode>
 )
   
-// git add . && git commit -m "refacted Goals Progects Tasks" && git push -u origin main
+// git add . && git commit -m "refacted Hot keys" && git push -u origin main

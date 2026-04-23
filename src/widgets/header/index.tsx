@@ -1,36 +1,34 @@
 // src/widgets/header/index.tsx
 
 import React, { useState } from 'react';
-import { useAppDispatch, useAppSelector } from '@app/providers/store';
-import { uiActions, type ViewType } from '@entities/ui';
+import { useAppDispatch } from '@app/providers/store';
+import { uiActions } from '@entities/ui';
 import styles from './index.module.scss';
 import { clearAllData, initializeMockData } from '@shared/mocks/init';
 import { fetchGoals } from '@entities/goal';
 import { fetchProjects } from '@entities/project';
 import { fetchTasks } from '@entities/task';
+import { useLocation, useNavigate } from 'react-router-dom';
+
+
 
 interface HeaderProps {
-  currentView?: ViewType;
-  onViewChange?: (view: ViewType) => void;
   onQuickCapture?: () => void;
 }
 
-export const Header: React.FC<HeaderProps> = ({ currentView: propView, onViewChange, onQuickCapture }) => {
+export const Header: React.FC<HeaderProps> = ({ onQuickCapture }) => {
   const dispatch = useAppDispatch();
-  const storeView = useAppSelector(state => state.ui.currentView);
-  const currentView = propView ?? storeView;
   const [showClearConfirm, setShowClearConfirm] = useState(false);
   const [showMockConfirm, setShowMockConfirm] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const navigate = useNavigate();
+  const location = useLocation();
 
-  const handleViewChange = (view: ViewType) => {
-    if (onViewChange) {
-      onViewChange(view);
-    } else {
-      dispatch(uiActions.setCurrentView(view));
-    }
+  
+  const handleNavigate = (path: string) => {
+    navigate(path);
   };
-
+  
   const handleOpenPalette = () => {
     dispatch(uiActions.setCommandPaletteOpen(true));
   };
@@ -86,6 +84,14 @@ export const Header: React.FC<HeaderProps> = ({ currentView: propView, onViewCha
     }
   };
 
+  const isActive = (path: string) => {
+    if (path === '/') {
+      return location.pathname === '/' || location.pathname === '/tasks';
+    }
+    return location.pathname === path;
+  };
+
+
   return (
     <>
       <header className={styles.header}>
@@ -96,20 +102,20 @@ export const Header: React.FC<HeaderProps> = ({ currentView: propView, onViewCha
 
         <nav className={styles.nav}>
           <button
-            className={`${styles.navButton} ${currentView === 'goals' ? styles.active : ''}`}
-            onClick={() => handleViewChange('goals')}
+            className={`${styles.navButton} ${location.pathname === '/goals' ? styles.active : ''}`}
+            onClick={() => handleNavigate('/goals')}
           >
             🎯 Цели
           </button>
           <button
-            className={`${styles.navButton} ${currentView === 'projects' ? styles.active : ''}`}
-            onClick={() => handleViewChange('projects')}
+            className={`${styles.navButton} ${location.pathname === '/projects' ? styles.active : ''}`}
+            onClick={() => handleNavigate('/projects')}
           >
             📁 Проекты
           </button>
           <button
-            className={`${styles.navButton} ${currentView === 'tasks' ? styles.active : ''}`}
-            onClick={() => handleViewChange('tasks')}
+            className={`${styles.navButton} ${isActive('/') || isActive('/tasks') ? styles.active : ''}`}
+            onClick={() => navigate('/tasks')}
           >
             ✅ Задачи
           </button>
@@ -142,6 +148,13 @@ export const Header: React.FC<HeaderProps> = ({ currentView: propView, onViewCha
             disabled={isLoading}
           >
             🗑️
+          </button>
+          <button 
+            className={styles.settingsButton} 
+            onClick={() => navigate('/settings')}
+            title="Настройки"
+          >
+            ⚙️
           </button>
         </div>
       </header>

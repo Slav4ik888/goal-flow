@@ -12,17 +12,19 @@ import { uiActions } from '@entities/ui';
 import { QuickCapture } from '@features/quick-capture';
 import { initDB } from '@shared/lib/db';
 import { initializeMockData } from '@shared/mocks/init';
-import styles from './index.module.scss';
 import { Breadcrumbs } from '@widgets/breadcrumbs';
+import { Route, Routes, useNavigate } from 'react-router-dom';
+import { SettingsSpace } from '@pages/settings';
+import styles from './index.module.scss';
 
 
 
 export const App: React.FC = () => {
   const dispatch = useAppDispatch();
-  const currentView = useAppSelector(state => state.ui.currentView);
   const isPaletteOpen = useAppSelector(state => state.ui.isCommandPaletteOpen);
   const [isQuickCaptureOpen, setIsQuickCaptureOpen] = useState(false);
   const [isInitializing, setIsInitializing] = useState(true);
+  const navigate = useNavigate();
 
   // Инициализация базы данных и моков при первом запуске
   useEffect(() => {
@@ -30,12 +32,13 @@ export const App: React.FC = () => {
       try {
         // Инициализируем базу данных
         await initDB();
-        
         // Загружаем моки только если база пуста
         await initializeMockData();
-      } catch (error) {
+      }
+      catch (error) {
         console.error('Failed to initialize app:', error);
-      } finally {
+      }
+      finally {
         setIsInitializing(false);
       }
     };
@@ -43,14 +46,35 @@ export const App: React.FC = () => {
     initializeApp();
   }, []);
 
+  // Используем react-hotkeys-hook для глобальных хоткеев
   useHotkeys('cmd+k,ctrl+k', (e) => {
     e.preventDefault();
+    console.log('Ctrl+K pressed'); // Для отладки
     dispatch(uiActions.setCommandPaletteOpen(!isPaletteOpen));
   });
-
-  useHotkeys('n', (e) => {
+  
+  useHotkeys('cmd+g,ctrl+g', (e) => {
     e.preventDefault();
-    setIsQuickCaptureOpen(true);
+    console.log('Ctrl+G pressed');
+    navigate('/goals');
+  });
+  
+  useHotkeys('cmd+p,ctrl+p', (e) => {
+    e.preventDefault();
+    console.log('Ctrl+P pressed');
+    navigate('/projects');
+  });
+  
+  useHotkeys('cmd+t,ctrl+t', (e) => {
+    e.preventDefault();
+    console.log('Ctrl+T pressed');
+    navigate('/tasks');
+  });
+  
+  useHotkeys('cmd+e,ctrl+e', (e) => {
+    e.preventDefault();
+    console.log('Ctrl+E pressed');
+    navigate('/settings');
   });
 
   useHotkeys('escape', () => {
@@ -61,19 +85,6 @@ export const App: React.FC = () => {
       setIsQuickCaptureOpen(false);
     }
   });
-
-  const renderContent = () => {
-    switch (currentView) {
-      case 'goals':
-        return <GoalsSpace />;
-      case 'projects':
-        return <ProjectsSpace />;
-      case 'tasks':
-        return <TasksSpace />;
-      default:
-        return <TasksSpace />;
-    }
-  };
 
   // Показываем индикатор загрузки во время инициализации
   if (isInitializing) {
@@ -90,7 +101,13 @@ export const App: React.FC = () => {
       <Header onQuickCapture={() => setIsQuickCaptureOpen(true)} />
       <Breadcrumbs />
       <main className={styles.main}>
-        {renderContent()}
+        <Routes>
+          <Route path="/" element={<GoalsSpace />} />
+          <Route path="/tasks" element={<TasksSpace />} />
+          <Route path="/goals" element={<GoalsSpace />} />
+          <Route path="/projects" element={<ProjectsSpace />} />
+          <Route path="/settings" element={<SettingsSpace />} />
+        </Routes>
       </main>
       <CommandPalette 
         isOpen={isPaletteOpen} 
