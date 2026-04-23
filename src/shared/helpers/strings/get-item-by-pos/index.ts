@@ -1,4 +1,4 @@
-import { isNum, isUndefined, isNotStr } from 'shared/lib/validators';
+import { isNum, isUndefined, isNotStr } from '@shared/lib/validators';
 
 
 /** Position */

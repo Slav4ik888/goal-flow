@@ -3,7 +3,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import type { PayloadAction } from '@reduxjs/toolkit';
 import type { Goal } from '../../types';
-import { saveGoal, getGoals, deleteGoal, updateGoal } from '@shared/lib/db';
+import { saveGoal, getGoals, deleteGoal } from '@shared/lib/db';
 
 
 

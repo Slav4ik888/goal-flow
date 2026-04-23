@@ -1,4 +1,4 @@
-import { isNotObj, isUndefined } from 'shared/lib/validators';
+import { isNotObj, isUndefined } from '@shared/lib/validators';
 
 
 

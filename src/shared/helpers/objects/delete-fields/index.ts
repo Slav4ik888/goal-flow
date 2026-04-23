@@ -1,4 +1,4 @@
-import { isNotArr, isUndefined } from 'shared/lib/validators';
+import { isNotArr, isUndefined } from '@shared/lib/validators';
 import { deleteField } from '../delete-field';
 
 

@@ -1,7 +1,7 @@
 import { ErrorText } from '../../../errors-texts';
 import { validateOneOfSeveral } from '..';
 
-
+// @ts-ignore
 enum LIST {
   first  = 'first',
   second = 'second',

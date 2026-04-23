@@ -1,9 +1,4 @@
 
-type Obj = {
-  [key: string]: any
-}
-
-
 /**
  * v.2025-07-20
  * Object value by scheme

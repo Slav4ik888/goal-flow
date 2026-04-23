@@ -1,5 +1,5 @@
-import type { AnyAction, ThunkDispatch } from '@reduxjs/toolkit';
-import type { StateSchema, ThunkExtraArg } from './state';
+// import type { AnyAction, ThunkDispatch } from '@reduxjs/toolkit';
+// import type { StateSchema, ThunkExtraArg } from './state';
 import type { Errors } from '@shared/lib/validators';
 import { __devLog } from '@shared/lib/tests/__dev-log';
 
@@ -18,14 +18,14 @@ export interface CustomAxiosError {
 }
 
 
-interface ErrorHandlersConfig {
-  pathname? : string
-}
+// interface ErrorHandlersConfig {
+//   pathname? : string
+// }
 
 export const errorHandlers = (
   e        : CustomAxiosError,
-  dispatch : ThunkDispatch<StateSchema, ThunkExtraArg, AnyAction>,
-  cfg      : ErrorHandlersConfig = {}
+  // dispatch : ThunkDispatch<StateSchema, ThunkExtraArg, AnyAction>,
+  // cfg      : ErrorHandlersConfig = {}
 ) => {
   __devLog('errorHandlers', 'e: ', e);
   __devLog('errorHandlers', 'response: ', e.response);

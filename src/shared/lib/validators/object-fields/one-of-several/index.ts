@@ -2,8 +2,8 @@ import {
   getValidResult, isHasField, isEmptyStr, isFieldValueUndefined, isNotOneOfSeveral, isNotHasField
  } from '../../base';
 import { ErrorText } from '../../errors-texts';
-import { Validation } from '../../types';
-import { ContainsField, ValidateOptions } from '../types';
+import type { Validation } from '../../types';
+import type { ContainsField, ValidateOptions } from '../types';
 
 /**
  * v.2023-05-09

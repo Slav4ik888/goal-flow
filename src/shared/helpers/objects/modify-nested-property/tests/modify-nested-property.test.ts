@@ -1,5 +1,5 @@
 import { modifyNestedProperty } from '..';
-import { isArr, isStr } from 'shared/lib/validators';
+import { isArr, isStr } from '@shared/lib/validators';
 
 
 

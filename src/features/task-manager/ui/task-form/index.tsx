@@ -56,7 +56,7 @@ export const TaskForm: React.FC<TaskFormProps> = ({
   });
 
   // Находим выбранный проект и его цель
-  const selectedProject = projects.find(p => p.id === formData.projectId);
+  // const selectedProject = projects.find(p => p.id === formData.projectId);
   const preselectedGoal = initialData?.goalId ? goals.find(g => g.id === initialData.goalId) : null;
   
   // Если цель предустановлена из проекта

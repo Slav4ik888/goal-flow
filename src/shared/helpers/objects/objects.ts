@@ -1,4 +1,4 @@
-import { isNotObj } from 'shared/lib/validators';
+import { isNotObj } from '@shared/lib/validators';
 
 /* eslint-disable */
 

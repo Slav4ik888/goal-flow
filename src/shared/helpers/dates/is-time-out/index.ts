@@ -1,4 +1,4 @@
-import { isNum } from 'shared/lib/validators';
+import { isNum } from '@shared/lib/validators';
 import { getCurrentMs } from '../get-current-ms';
 
 /**

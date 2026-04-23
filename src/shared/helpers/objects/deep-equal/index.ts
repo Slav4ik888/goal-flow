@@ -1,5 +1,4 @@
 
-type AnyObject = Record<string, any>
 
 /**
  * Рекурсивно сравнивает два объекта или массива.

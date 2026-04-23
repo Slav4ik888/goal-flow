@@ -22,7 +22,6 @@ export const GoalCard: React.FC<GoalCardProps> = ({
   goal, 
   tasks, 
   onClick, 
-  onEdit,
   onCreateProject
 }) => {
   const dispatch = useAppDispatch();

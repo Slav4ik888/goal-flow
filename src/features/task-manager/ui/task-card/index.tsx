@@ -36,7 +36,7 @@ const priorityLabels: Record<Priority, string> = {
 export const TaskCard: React.FC<TaskCardProps> = ({ task, onEdit, onDelete, onStatusChange, onDoubleClick }) => {
   const dispatch = useAppDispatch();
   const activeTimeEntry = useAppSelector(state => state.timeEntries.activeTimeEntry);
-  const [isExpanded, setIsExpanded] = useState(false);
+  const [isExpanded] = useState(false);
   const isTimerRunning = activeTimeEntry?.taskId === task.id;
 
   const [showMenu, setShowMenu] = useState(false);

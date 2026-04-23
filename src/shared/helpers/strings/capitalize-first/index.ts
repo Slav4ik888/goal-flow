@@ -1,4 +1,4 @@
-import { isNotStr } from 'shared/lib/validators'
+import { isNotStr } from '@shared/lib/validators'
 import { capitalize } from '../capitalize'
 
 

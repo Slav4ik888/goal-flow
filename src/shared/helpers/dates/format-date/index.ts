@@ -1,4 +1,4 @@
-import { isUndefined } from 'shared/lib/validators';
+import { isUndefined } from '@shared/lib/validators';
 import { FORMAT, getMonth, getMonthDDсYYYY, getMonthYYYY, SUB, getDDMonthYYYY,
 getDMonthYYYY, getDMonthYYYYHHMM, getYYYYMMDDt, getYYYYMMDD, getDDMMYYYYt, getDDMMYYYYd,
 getDDMMYYdHHMM, getHHMM, getDDMonYY, getDDMMYYd, getDDmonYY } from '..';

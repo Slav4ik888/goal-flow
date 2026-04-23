@@ -1,4 +1,4 @@
-import { isNotNum } from 'shared/lib/validators';
+import { isNotNum } from '@shared/lib/validators';
 
 
 

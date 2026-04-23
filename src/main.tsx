@@ -17,4 +17,4 @@ createRoot(document.getElementById('root')!).render(
   </StrictMode>
 )
   
-// git add . && git commit -m "refacted Hot keys" && git push -u origin main
+// git add . && git commit -m "small fixed" && git push -u origin main

@@ -1,4 +1,4 @@
-import { isUndefined } from 'shared/lib/validators';
+import { isUndefined } from '@shared/lib/validators';
 
 
 /** Возвращает число после запятой */

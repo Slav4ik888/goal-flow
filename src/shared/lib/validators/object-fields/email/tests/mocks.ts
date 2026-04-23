@@ -1,6 +1,6 @@
 import { ErrorText } from '../../../errors-texts';
 import { getValidResult } from '../../../base';
-import { Validation } from '../../../../validators';
+import type { Validation } from '../../../../validators';
 
 
 interface MockItem {

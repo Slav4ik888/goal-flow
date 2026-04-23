@@ -1,4 +1,4 @@
-import { getMockStrLength } from 'shared/helpers/strings';
+import { getMockStrLength } from '@shared/helpers/strings';
 import { isMoreThan, isNotMoreThan } from '..';
 
 

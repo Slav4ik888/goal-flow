@@ -14,7 +14,7 @@ const mocks: Mocks = [
 
 
 describe('getMockStrLength', () => {
-  mocks.forEach((m, i) => {
+  mocks.forEach((m) => {
     const description = `Length - ${m[0].length}, char: ${m[0].char}`;
 
     it(description, () => expect(getMockStrLength(m[0].length, m[0].char)).toEqual(m[1]))

@@ -3,7 +3,7 @@ import { mocks } from './mocks';
 
 
 describe('getFirstFieldKey', () => {
-  mocks.forEach((m, i) => {
+  mocks.forEach((m) => {
     it(m[0].description, () => {
       expect(getFirstFieldKey(m[0].obj))
         .toEqual(m[1])

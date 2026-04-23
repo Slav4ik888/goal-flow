@@ -27,7 +27,7 @@ export const QuickCapture: React.FC<QuickCaptureProps> = ({ isOpen, onClose }) =
   } | null>(null);
 
   const projects = useAppSelector(state => state.projects.items);
-  const goals = useAppSelector(state => state.goals.items);
+  // const goals = useAppSelector(state => state.goals.items);
 
   useEffect(() => {
     if (isOpen) {

@@ -1,4 +1,4 @@
-import { isArr, isObj, isStr, isNotObj } from 'shared/lib/validators';
+import { isArr, isObj, isStr, isNotObj } from '@shared/lib/validators';
 
 const s = (str: string, key: string) => `${str ? ', ' : ''}${key}: `;
 

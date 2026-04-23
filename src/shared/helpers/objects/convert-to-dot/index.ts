@@ -1,4 +1,4 @@
-import { isObj } from 'shared/lib/validators';
+import { isObj } from '@shared/lib/validators';
 import { isEmpty } from '..';
 
 

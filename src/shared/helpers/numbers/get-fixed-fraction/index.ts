@@ -1,5 +1,4 @@
-import { isNotNum } from 'shared/lib/validators'
-import { addZeroToRest } from '../add-zero-to-rest';
+import { isNotNum } from '@shared/lib/validators'
 
 
 

@@ -1,8 +1,8 @@
 import { getValidResult, isNotEmail, isEmptyStr, isNotHasField } from '../../base';
 import { ErrorText } from '../../errors-texts';
-import { Validation } from '../../types';
+import type { Validation } from '../../types';
 import { validateString } from '../string';
-import { ContainsField } from '../types';
+import type { ContainsField } from '../types';
 
 
 

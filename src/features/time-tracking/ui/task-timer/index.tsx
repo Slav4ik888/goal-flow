@@ -16,7 +16,6 @@ interface TaskTimerProps {
 }
 
 export const TaskTimer: React.FC<TaskTimerProps> = ({ 
-  taskId,
   taskTitle,
   initialSeconds, 
   onUpdate, 

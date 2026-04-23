@@ -1,11 +1,9 @@
 // src/widgets/command-palette/index.tsx
 
 import React, { useState } from 'react';
-import { useAppDispatch } from '@app/providers/store';
 import styles from './index.module.scss';
 import { useNavigate } from 'react-router-dom';
 import { exportAllData } from '@features/export';
-import { uiActions } from '@entities/ui';
 
 
 
@@ -15,7 +13,6 @@ interface CommandPaletteProps {
 }
 
 export const CommandPalette: React.FC<CommandPaletteProps> = ({ isOpen, onClose }) => {
-  const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const [search, setSearch] = useState('');
 

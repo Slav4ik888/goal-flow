@@ -1,4 +1,4 @@
-import { isArr, isObj } from 'shared/lib/validators';
+import { isArr, isObj } from '@shared/lib/validators';
 
 
 /** Returns true if arr1 == arr2 */

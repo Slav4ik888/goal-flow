@@ -1,5 +1,5 @@
 import { getMockStrLength } from '../../../../../../../../helpers/strings';
-import { Mocks } from './types';
+import type { Mocks } from './types';
 
 export const mocks: Mocks = [
   [

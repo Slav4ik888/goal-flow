@@ -3,7 +3,7 @@ import { getValidResult } from '..';
 
 
 describe('getValidResult', () => {
-  mocks.forEach((m, i) => {
+  mocks.forEach((m) => {
     it(m[0].description, () => {
       expect(getValidResult(m[0].data)).toEqual(m[1])
     })

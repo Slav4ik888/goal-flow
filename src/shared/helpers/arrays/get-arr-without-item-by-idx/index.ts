@@ -1,4 +1,4 @@
-import { __devLog } from 'shared/lib/tests/__dev-log';
+import { __devLog } from '@shared/lib/tests/__dev-log';
 
 /**
  * Возвращает массив без указанного элемента по index

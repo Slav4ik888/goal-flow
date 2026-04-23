@@ -1,4 +1,4 @@
-import { isArr } from 'shared/lib/validators';
+import { isArr } from '@shared/lib/validators';
 import { cloneObj, updateObject } from '../../objects';
 
 

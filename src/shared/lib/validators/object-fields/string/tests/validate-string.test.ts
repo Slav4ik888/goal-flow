@@ -1,7 +1,7 @@
 import { ErrorText } from '../../../errors-texts';
 import { validateString } from '..';
-import { getMockStrLength } from 'shared/helpers/strings';
-import { ContainsField } from '../../types';
+import { getMockStrLength } from '@shared/helpers/strings';
+import type { ContainsField } from '../../types';
 
 
 describe('validateString', () => {

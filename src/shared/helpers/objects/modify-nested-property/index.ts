@@ -1,6 +1,6 @@
 import { removePropertyIfDefined } from '../remove-property-if-defined';
 import { setValueByScheme } from '../set-value-by-scheme';
-import { isArr, isStr } from 'shared/lib/validators';
+import { isArr, isStr } from '@shared/lib/validators';
 
 
 

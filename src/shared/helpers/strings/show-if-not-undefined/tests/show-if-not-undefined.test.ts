@@ -3,7 +3,7 @@ import { mocks } from './mocks';
 
 
 describe('showIfNotUndefined', () => {
-  mocks.forEach((m, i) => {
+  mocks.forEach((m) => {
     it(m[0].description, () => {
       expect(showIfNotUndefined(m[0].field, m[0].wrapper))
         .toEqual(m[1])

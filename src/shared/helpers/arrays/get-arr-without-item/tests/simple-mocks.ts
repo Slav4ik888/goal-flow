@@ -1,4 +1,4 @@
-import { MocksOfSimple, MocksSimpleType, MockSimpleType } from './simple-types';
+import { MocksOfSimple,  MockSimpleType } from './simple-types';
 
 
 export const ARR_OF_SIMPLE = ['field1', 'field2', 'field3', 'field4', 'field5', 'field6'];
