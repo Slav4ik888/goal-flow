@@ -15,6 +15,14 @@
     "test:widgets": "jest --detectOpenHandles --config ./config/jest/jest.config-widgets.ts",
     "test:unit": "jest --config ./config/jest/jest.config.ts"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Slav4ik888/goal-flow.git"
+  },
+  "imports": {
+    "#*": "./src/*"
+  },
+  "homepage": "https://github.com/Slav4ik888/goal-flow",
   "dependencies": {
     "@reduxjs/toolkit": "2.11.2",
     "idb": "^8.0.3",
