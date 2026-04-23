@@ -6,6 +6,7 @@ import { getActiveFilters } from '@features/filters/lib/query-parser';
 import styles from './index.module.scss';
 
 
+
 export const FilterBar: React.FC = () => {
   const dispatch = useAppDispatch();
   const filterQuery = useAppSelector(state => state.ui.filterQuery);
@@ -96,7 +97,7 @@ export const FilterBar: React.FC = () => {
         <button onClick={handleFilterApply} className={styles.applyButton}>
           Применить
         </button>
-        {filterQuery && (
+        {(filterQuery || localFilterInput) && (
           <button onClick={handleClearFilter} className={styles.clearFilter} title="Очистить фильтры">
             ✕
           </button>

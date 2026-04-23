@@ -11,10 +11,11 @@ import styles from './index.module.scss';
 interface ProjectCardProps {
   project: Project;
   onEdit?: (project: Project) => void;
-  onClick?: () => void;
+  onClick?: (project: Project) => void;
+  onCreateTask?: (project: Project) => void;
 }
 
-export const ProjectCard: React.FC<ProjectCardProps> = ({ project, onClick }) => {
+export const ProjectCard: React.FC<ProjectCardProps> = ({ project, onClick, onCreateTask }) => {
   const dispatch = useAppDispatch();
   const tasks = useAppSelector(state => state.tasks.items);
   const goals = useAppSelector(state => state.goals.items);
@@ -32,11 +33,19 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({ project, onClick }) =>
     ? (completedTasks.length / relatedTasks.length) * 100 
     : 0;
 
-  const handleProjectClick = () => {
+  const handleCardClick = () => {
     if (onClick) {
-      onClick();
+      onClick(project);
     }
   };
+  
+  const handleCreateTask = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (onCreateTask) {
+      onCreateTask(project);
+    }
+  };
+  
   const handleArchive = async (e: React.MouseEvent) => {
     e.stopPropagation();
     if (confirm(`Архивировать проект "${project.title}"?`)) {
@@ -68,7 +77,7 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({ project, onClick }) =>
   return (
     <div
       className={`${styles.card} ${project.status === 'archived' ? styles.archived : ''} ${isExpanded ? styles.expanded : ''}`}
-      onClick={handleProjectClick}
+      onClick={handleCardClick}
     >
       <div className={styles.header}>
         <div className={styles.icon}>📁</div>
@@ -207,6 +216,15 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({ project, onClick }) =>
         >
           {isExpanded ? 'Скрыть задачи ▲' : `Показать задачи (${relatedTasks.length}) ▼`}
         </button>
+        
+        {/* Кнопка создания задачи */}
+          <button 
+            onClick={handleCreateTask}
+            className={styles.createTaskButton}
+            title="Создать задачу для этого проекта"
+          >
+            + Задача
+          </button>
       </div>
     </div>
   );

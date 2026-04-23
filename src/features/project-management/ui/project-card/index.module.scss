@@ -1,4 +1,5 @@
 // src/features/project-management/ui/project-card/index.module.scss
+
 .card {
   background: white;
   border-radius: 12px;
@@ -283,5 +284,69 @@
 
   &:hover {
     background: #f0f0f0;
+  }
+}
+
+
+
+.footer {
+  margin-top: 16px;
+  padding-top: 12px;
+  border-top: 1px solid #f0f0f0;
+}
+
+.footerLeft {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.expandButton {
+  background: none;
+  border: none;
+  color: #667eea;
+  cursor: pointer;
+  font-size: 13px;
+  padding: 6px 12px;
+  border-radius: 6px;
+  transition: all 0.2s;
+
+  &:hover {
+    background: #f0f0f0;
+  }
+}
+
+.createTaskButton {
+  background: none;
+  border: 1px solid #2196f3;
+  color: #2196f3;
+  cursor: pointer;
+  font-size: 12px;
+  padding: 5px 12px;
+  border-radius: 6px;
+  transition: all 0.2s;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+
+  &:hover {
+    background: #2196f3;
+    color: white;
+    transform: translateY(-1px);
+  }
+}
+
+// Адаптивность
+@media (max-width: 768px) {
+  .footerLeft {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .expandButton,
+  .createTaskButton {
+    width: 100%;
+    justify-content: center;
   }
 }

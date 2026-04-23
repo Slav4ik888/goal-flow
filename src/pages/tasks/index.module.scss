@@ -145,19 +145,41 @@
   min-height: 200px;
 }
 
-.modal {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
-  backdrop-filter: blur(4px);
+
+
+.modalHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+
+  h2 {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 600;
+    color: #333;
+    word-break: break-word;
+  }
+}
+
+.closeModalButton {
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: #999;
+  padding: 0;
+  width: 32px;
+  height: 32px;
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 1000;
-  animation: fadeIn 0.2s ease;
+  border-radius: 8px;
+
+  &:hover {
+    background: #f0f0f0;
+    color: #333;
+  }
 }
 
 .modalContent {
@@ -186,6 +208,161 @@
     }
   }
 }
+
+.taskDetails {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.detailRow {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  font-size: 14px;
+}
+
+.detailLabel {
+  min-width: 100px;
+  font-weight: 500;
+  color: #666;
+  flex-shrink: 0; // <-- фиксируем ширину, не даём сжиматься
+}
+
+.detailValue {
+  color: #333;
+  flex: 1; // <-- это растягивает элемент
+
+  // Для приоритета отменяем flex: 1
+  &.priority {
+    flex: 0 0 auto; // <-- не растягиваем, только по содержимому
+    display: inline-block; // <-- делаем inline-block для точного размера
+    width: auto; // <-- ширина по содержимому
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 4px;
+    background: #ff9800;
+    color: white;
+  }
+}
+
+.tagsList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  flex: 1;
+}
+
+.tag {
+  background: #f0f0f0;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  color: #666;
+}
+
+.modalButtons {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  padding-top: 16px;
+  border-top: 1px solid #e0e0e0;
+}
+
+.editButton,
+.deleteButton,
+.closeButton {
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.editButton {
+  background: none;
+  border: 1px solid #667eea;
+  color: #667eea;
+
+  &:hover {
+    background: #f0f4ff;
+  }
+}
+
+.deleteButton {
+  background: none;
+  border: 1px solid #f44336;
+  color: #f44336;
+
+  &:hover {
+    background: #ffebee;
+  }
+}
+
+.closeButton {
+  background: #f5f5f5;
+  border: none;
+  color: #666;
+
+  &:hover {
+    background: #e0e0e0;
+  }
+}
+
+// Тёмная тема для модалки
+@media (prefers-color-scheme: dark) {
+  .modalHeader h2 {
+    color: #e0e0e0;
+  }
+
+  .closeModalButton:hover {
+    background: #3a3a3a;
+    color: #e0e0e0;
+  }
+
+  .detailLabel {
+    color: #aaa;
+  }
+
+  .detailValue {
+    color: #ccc;
+  }
+
+  .tag {
+    background: #3a3a3a;
+    color: #aaa;
+  }
+
+  .editButton {
+    border-color: #7c9bff;
+    color: #7c9bff;
+
+    &:hover {
+      background: rgba(124, 155, 255, 0.1);
+    }
+  }
+
+  .deleteButton {
+    border-color: #ff6b6b;
+    color: #ff6b6b;
+
+    &:hover {
+      background: rgba(255, 107, 107, 0.1);
+    }
+  }
+
+  .closeButton {
+    background: #3a3a3a;
+    color: #aaa;
+
+    &:hover {
+      background: #4a4a4a;
+    }
+  }
+}
+
+
 
 @keyframes slideUp {
   from {

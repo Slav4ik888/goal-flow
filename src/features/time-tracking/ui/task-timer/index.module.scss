@@ -1,4 +1,5 @@
 // src/features/time-tracking/ui/task-timer/index.module.scss
+
 .timer {
   display: flex;
   align-items: center;
@@ -14,6 +15,32 @@
   color: #333;
   min-width: 65px;
   text-align: center;
+
+  &.editable {
+    cursor: pointer;
+    padding: 2px 4px;
+    border-radius: 4px;
+    transition: background 0.1s;
+
+    &:hover {
+      background: #e0e0e0;
+    }
+  }
+}
+
+.timeInput {
+  width: 110px;
+  padding: 2px 4px;
+  border: 1px solid #667eea;
+  border-radius: 4px;
+  font-size: 12px;
+  font-family: monospace;
+  text-align: center;
+  outline: none;
+
+  &:focus {
+    box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.2);
+  }
 }
 
 .play,
@@ -37,4 +64,25 @@
 
 .stop {
   color: #ff9800;
+}
+
+// Тёмная тема
+@media (prefers-color-scheme: dark) {
+  .timer {
+    background: #3a3a3a;
+  }
+
+  .display {
+    color: #e0e0e0;
+
+    &.editable:hover {
+      background: #4a4a4a;
+    }
+  }
+
+  .timeInput {
+    background: #2a2a2a;
+    border-color: #7c9bff;
+    color: #e0e0e0;
+  }
 }

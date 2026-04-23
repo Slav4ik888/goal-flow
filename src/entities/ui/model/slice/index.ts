@@ -130,7 +130,8 @@ const uiSlice = createSlice({
       state.currentView = 'tasks';
       state.displayMode = 'all';
       state.filterQuery = '';
-    },
+      state.searchQuery = '';
+    },  
     
     goBack(state) {
       if (state.navigationHistory.length === 0) return;

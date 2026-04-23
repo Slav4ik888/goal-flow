@@ -185,39 +185,130 @@ export function filterTasks(tasks: Task[], query: FilterQuery, projects: any[] =
   });
 }
 
+
+
 // Получение активных фильтров для отображения
+// src/features/filters/lib/query-parser.ts (простая версия без matchAll)
+
 export function getActiveFilters(query: string): { type: string; value: string; label: string }[] {
-  const filters: { type: string; value: string; label: string }[] = [];
+  if (!query.trim()) return [];
   
-  const tagMatch = query.match(/#\w+/g);
-  if (tagMatch) {
-    tagMatch.forEach(tag => {
-      filters.push({ type: 'tag', value: tag, label: `Тег: ${tag}` });
+  const filters: { type: string; value: string; label: string }[] = [];
+  const addedValues = new Set<string>();
+  
+  // Теги
+  const tagMatches = query.match(/#\w+/g);
+  if (tagMatches) {
+    tagMatches.forEach(tag => {
+      if (!addedValues.has(tag)) {
+        addedValues.add(tag);
+        filters.push({ type: 'tag', value: tag, label: `Тег: ${tag}` });
+      }
     });
   }
   
-  const projectMatch = query.match(/project:\S+/);
+  // Проект (включая project:none)
+  const projectMatch = query.match(/project:(\S+)/);
   if (projectMatch) {
-    filters.push({ type: 'project', value: projectMatch[0], label: `Проект: ${projectMatch[0].replace('project:', '')}` });
+    const projectValue = projectMatch[0];
+    if (!addedValues.has(projectValue)) {
+      addedValues.add(projectValue);
+      const projectName = projectMatch[1];
+      const label = projectName === 'none' ? 'Без проекта' : `Проект: ${projectName}`;
+      filters.push({ type: 'project', value: projectValue, label });
+    }
   }
   
-  const priorityMatch = query.match(/priority:P[0-3]/i);
-  if (priorityMatch) {
-    filters.push({ type: 'priority', value: priorityMatch[0], label: `Приоритет: ${priorityMatch[0].replace('priority:', '')}` });
+  // Цель (включая goal:none)
+  const goalMatch = query.match(/goal:(\S+)/);
+  if (goalMatch) {
+    const goalValue = goalMatch[0];
+    if (!addedValues.has(goalValue)) {
+      addedValues.add(goalValue);
+      const goalName = goalMatch[1];
+      const label = goalName === 'none' ? 'Без цели' : `Цель: ${goalName}`;
+      filters.push({ type: 'goal', value: goalValue, label });
+    }
   }
   
-  const dueMatch = query.match(/due:\w+/);
+  // Приоритет
+  const priorityMatches = query.match(/priority:(P[0-3])/gi);
+  if (priorityMatches) {
+    priorityMatches.forEach(p => {
+      const lowerP = p.toLowerCase();
+      if (!addedValues.has(lowerP)) {
+        addedValues.add(lowerP);
+        const priorityValue = p.split(':')[1].toUpperCase();
+        filters.push({ type: 'priority', value: lowerP, label: `Приоритет: ${priorityValue}` });
+      }
+    });
+  }
+  
+  // Время (>4h)
+  const minHoursMatch = query.match(/>(\d+(?:\.\d+)?)h/);
+  if (minHoursMatch) {
+    const minValue = minHoursMatch[0];
+    if (!addedValues.has(minValue)) {
+      addedValues.add(minValue);
+      filters.push({ type: 'time', value: minValue, label: `Больше ${minHoursMatch[1]} часов` });
+    }
+  }
+  
+  // Время (<2h)
+  const maxHoursMatch = query.match(/<(\d+(?:\.\d+)?)h/);
+  if (maxHoursMatch) {
+    const maxValue = maxHoursMatch[0];
+    if (!addedValues.has(maxValue)) {
+      addedValues.add(maxValue);
+      filters.push({ type: 'time', value: maxValue, label: `Меньше ${maxHoursMatch[1]} часов` });
+    }
+  }
+  
+  // Дедлайн
+  const dueMatch = query.match(/due:(today|week|month|overdue)/);
   if (dueMatch) {
-    const dueMap: Record<string, string> = { today: 'Сегодня', week: 'Эта неделя', month: 'Этот месяц', overdue: 'Просроченные' };
-    filters.push({ type: 'due', value: dueMatch[0], label: dueMap[dueMatch[0].replace('due:', '')] || dueMatch[0] });
+    const dueValue = dueMatch[0];
+    if (!addedValues.has(dueValue)) {
+      addedValues.add(dueValue);
+      const dueMap: Record<string, string> = { 
+        today: 'Сегодня', 
+        week: 'Эта неделя', 
+        month: 'Этот месяц', 
+        overdue: 'Просроченные' 
+      };
+      filters.push({ type: 'due', value: dueValue, label: dueMap[dueMatch[1]] });
+    }
   }
   
-  if (query.includes('goal:none')) {
-    filters.push({ type: 'goal', value: 'goal:none', label: 'Без цели' });
+  // Статус
+  const statusMatch = query.match(/status:(todo|in-progress|done)/);
+  if (statusMatch) {
+    const statusValue = statusMatch[0];
+    if (!addedValues.has(statusValue)) {
+      addedValues.add(statusValue);
+      const statusMap: Record<string, string> = { 
+        todo: 'К выполнению', 
+        'in-progress': 'В работе', 
+        done: 'Готово' 
+      };
+      filters.push({ type: 'status', value: statusValue, label: `Статус: ${statusMap[statusMatch[1]]}` });
+    }
   }
   
-  if (query.includes('project:none')) {
-    filters.push({ type: 'project', value: 'project:none', label: 'Без проекта' });
+  // Текстовый поиск
+  let remainingQuery = query;
+  remainingQuery = remainingQuery.replace(/#\w+/g, '');
+  remainingQuery = remainingQuery.replace(/project:\S+/g, '');
+  remainingQuery = remainingQuery.replace(/goal:\S+/g, '');
+  remainingQuery = remainingQuery.replace(/priority:P[0-3]/gi, '');
+  remainingQuery = remainingQuery.replace(/>\d+(?:\.\d+)?h/g, '');
+  remainingQuery = remainingQuery.replace(/<\d+(?:\.\d+)?h/g, '');
+  remainingQuery = remainingQuery.replace(/due:\w+/g, '');
+  remainingQuery = remainingQuery.replace(/status:\w+/g, '');
+  remainingQuery = remainingQuery.trim();
+  
+  if (remainingQuery && !addedValues.has(remainingQuery)) {
+    filters.push({ type: 'text', value: remainingQuery, label: `Поиск: "${remainingQuery}"` });
   }
   
   return filters;

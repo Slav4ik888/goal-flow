@@ -28,8 +28,16 @@ export const createTask = createAsyncThunk(
   'tasks/createTask',
   async (task: Omit<Task, 'id' | 'createdAt' | 'updatedAt' | 'timeSpentSeconds'>) => {
     const newTask: Task = {
-      ...task,
       id: crypto.randomUUID(),
+      title: task.title,
+      description: task.description || '',
+      status: task.status,
+      projectId: task.projectId,
+      goalId: task.goalId,
+      priority: task.priority,
+      dueDate: task.dueDate,
+      estimatedHours: task.estimatedHours,
+      tags: task.tags,
       timeSpentSeconds: 0,
       createdAt: Date.now(),
       updatedAt: Date.now(),

@@ -5,8 +5,7 @@ import { useAppDispatch, useAppSelector } from '@app/providers/store';
 import { fetchTasks, createTask, editTask, removeTask, type Task } from '@entities/task';
 import { fetchProjects } from '@entities/project';
 import { fetchGoals } from '@entities/goal';
-import { TaskCard } from '@features/task-manager/ui/task-card';
-import { TaskForm } from '@features/task-manager/ui/task-form';
+import { TaskCard, TaskForm } from '@features/task-manager';
 import { FilterBar } from '@widgets/filters';
 import { parseFilterQuery, filterTasks } from '@features/filters/lib/query-parser';
 import { uiActions } from '@entities/ui';
@@ -31,7 +30,7 @@ export const TasksSpace: React.FC = () => {
     dispatch(fetchProjects());
     dispatch(fetchGoals());
   }, [dispatch]);
-  
+
   const filteredTasks = React.useMemo(() => {
     let result = tasks;
     
@@ -50,17 +49,6 @@ export const TasksSpace: React.FC = () => {
     return result;
   }, [tasks, filterQuery, searchQuery, projects, goals]);
 
-
-  const handleTaskClick = (task: Task) => {
-    setSelectedTaskDetail(task);
-    // или использовать navigateToTask для Breadcrumbs
-    dispatch(uiActions.navigateToTask({ 
-      id: task.id, 
-      title: task.title,
-      projectId: task.projectId 
-    }));
-  };
-  
   const handleCreateTask = async (data: any) => {
     await dispatch(createTask(data));
     setShowForm(false);
@@ -74,6 +62,20 @@ export const TasksSpace: React.FC = () => {
   const handleDeleteTask = async (id: string) => {
     if (confirm('Удалить задачу?')) {
       await dispatch(removeTask(id));
+    }
+  };
+
+  // Открытие модалки с деталями задачи
+  const handleTaskDoubleClick = (task: Task) => {
+    setSelectedTaskDetail(task);
+  };
+
+  // Закрытие модалки с деталями - сбрасываем фильтр, если он был установлен для этой задачи
+  const handleCloseTaskDetail = () => {
+    setSelectedTaskDetail(null);
+    // Проверяем, не был ли установлен фильтр по ID этой задачи
+    if (filterQuery && filterQuery.startsWith('id:')) {
+      dispatch(uiActions.goToAllTasks()); // Сбрасываем фильтр и показываем все задачи
     }
   };
 
@@ -121,6 +123,122 @@ export const TasksSpace: React.FC = () => {
         </div>
       )}
 
+      {/* Модалка с деталями задачи */}
+      {selectedTaskDetail && (
+        <div className={styles.modal} onClick={handleCloseTaskDetail}>
+          <div className={styles.modalContent} onClick={e => e.stopPropagation()}>
+            <div className={styles.modalHeader}>
+              <h2>{selectedTaskDetail.title}</h2>
+              <button onClick={handleCloseTaskDetail} className={styles.closeModalButton}>
+                ✕
+              </button>
+            </div>
+            
+            <div className={styles.taskDetails}>
+              <div className={styles.detailRow}>
+                <span className={styles.detailLabel}>Описание:</span>
+                <span className={styles.detailValue}>
+                  {selectedTaskDetail.description || 'Нет описания'}
+                </span>
+              </div>
+              
+              <div className={styles.detailRow}>
+                <span className={styles.detailLabel}>Приоритет:</span>
+                <span className={`${styles.detailValue} ${styles.priority}`}>
+                  {selectedTaskDetail.priority}
+                </span>
+              </div>
+              
+              <div className={styles.detailRow}>
+                <span className={styles.detailLabel}>Статус:</span>
+                <span className={styles.detailValue}>
+                  {selectedTaskDetail.status === 'todo' && 'К выполнению'}
+                  {selectedTaskDetail.status === 'in-progress' && 'В работе'}
+                  {selectedTaskDetail.status === 'done' && 'Готово'}
+                </span>
+              </div>
+              
+              <div className={styles.detailRow}>
+                <span className={styles.detailLabel}>Затрачено времени:</span>
+                <span className={styles.detailValue}>
+                  {Math.floor(selectedTaskDetail.timeSpentSeconds / 3600)}ч{' '}
+                  {Math.floor((selectedTaskDetail.timeSpentSeconds % 3600) / 60)}м
+                </span>
+              </div>
+              
+              {selectedTaskDetail.estimatedHours && (
+                <div className={styles.detailRow}>
+                  <span className={styles.detailLabel}>Оценка:</span>
+                  <span className={styles.detailValue}>{selectedTaskDetail.estimatedHours} ч</span>
+                </div>
+              )}
+              
+              {selectedTaskDetail.dueDate && (
+                <div className={styles.detailRow}>
+                  <span className={styles.detailLabel}>Дедлайн:</span>
+                  <span className={styles.detailValue}>
+                    {new Date(selectedTaskDetail.dueDate).toLocaleDateString()}
+                  </span>
+                </div>
+              )}
+              
+              {selectedTaskDetail.tags.length > 0 && (
+                <div className={styles.detailRow}>
+                  <span className={styles.detailLabel}>Теги:</span>
+                  <div className={styles.tagsList}>
+                    {selectedTaskDetail.tags.map(tag => (
+                      <span key={tag} className={styles.tag}>#{tag}</span>
+                    ))}
+                  </div>
+                </div>
+              )}
+              
+              {selectedTaskDetail.projectId && (
+                <div className={styles.detailRow}>
+                  <span className={styles.detailLabel}>Проект:</span>
+                  <span className={styles.detailValue}>
+                    {projects.find(p => p.id === selectedTaskDetail.projectId)?.title || 'Неизвестно'}
+                  </span>
+                </div>
+              )}
+              
+              {selectedTaskDetail.goalId && (
+                <div className={styles.detailRow}>
+                  <span className={styles.detailLabel}>Цель:</span>
+                  <span className={styles.detailValue}>
+                    {goals.find(g => g.id === selectedTaskDetail.goalId)?.title || 'Неизвестно'}
+                  </span>
+                </div>
+              )}
+            </div>
+            
+            <div className={styles.modalButtons}>
+              <button 
+                onClick={() => {
+                  handleCloseTaskDetail();
+                  setEditingTask(selectedTaskDetail);
+                }} 
+                className={styles.editButton}
+              >
+                ✎ Редактировать
+              </button>
+              <button 
+                onClick={() => {
+                  handleDeleteTask(selectedTaskDetail.id);
+                  handleCloseTaskDetail();
+                }} 
+                className={styles.deleteButton}
+              >
+                🗑 Удалить
+              </button>
+              <button onClick={handleCloseTaskDetail} className={styles.closeButton}>
+                Закрыть
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {loading && <div className={styles.loading}>Загрузка...</div>}
 
       <div className={styles.kanban}>
@@ -135,10 +253,10 @@ export const TasksSpace: React.FC = () => {
               <TaskCard
                 key={task.id}
                 task={task}
+                onDoubleClick={() => handleTaskDoubleClick(task)}
                 onEdit={() => setEditingTask(task)}
                 onDelete={() => handleDeleteTask(task.id)}
                 onStatusChange={(status) => handleUpdateTask(task.id, { status })}
-                onClick={() => handleTaskClick(task)}
               />
             ))}
           </div>
@@ -155,10 +273,10 @@ export const TasksSpace: React.FC = () => {
               <TaskCard
                 key={task.id}
                 task={task}
+                onDoubleClick={() => handleTaskDoubleClick(task)}
                 onEdit={() => setEditingTask(task)}
                 onDelete={() => handleDeleteTask(task.id)}
                 onStatusChange={(status) => handleUpdateTask(task.id, { status })}
-                onClick={() => handleTaskClick(task)}
               />
             ))}
           </div>
@@ -175,10 +293,10 @@ export const TasksSpace: React.FC = () => {
               <TaskCard
                 key={task.id}
                 task={task}
+                onDoubleClick={() => handleTaskDoubleClick(task)}
                 onEdit={() => setEditingTask(task)}
                 onDelete={() => handleDeleteTask(task.id)}
                 onStatusChange={(status) => handleUpdateTask(task.id, { status })}
-                onClick={() => handleTaskClick(task)}
               />
             ))}
           </div>
@@ -188,29 +306,6 @@ export const TasksSpace: React.FC = () => {
       {filteredTasks.length === 0 && !loading && (
         <div className={styles.emptyState}>
           {filterQuery || searchQuery ? 'Ничего не найдено' : 'Нет задач. Создайте первую задачу!'}
-        </div>
-      )}
-      
-      {/* Модалка с деталями задачи */}
-      {selectedTaskDetail && (
-        <div className={styles.modal} onClick={() => setSelectedTaskDetail(null)}>
-          <div className={styles.modalContent} onClick={e => e.stopPropagation()}>
-            <h2>{selectedTaskDetail.title}</h2>
-            {/* Полная информация о задаче */}
-            <div className={styles.taskDetails}>
-              <p><strong>Описание:</strong> {selectedTaskDetail.description || 'Нет описания'}</p>
-              <p><strong>Приоритет:</strong> {selectedTaskDetail.priority}</p>
-              <p><strong>Статус:</strong> {selectedTaskDetail.status}</p>
-              <p><strong>Время:</strong> {Math.floor(selectedTaskDetail.timeSpentSeconds / 3600)}ч</p>
-              {selectedTaskDetail.dueDate && (
-                <p><strong>Дедлайн:</strong> {new Date(selectedTaskDetail.dueDate).toLocaleDateString()}</p>
-              )}
-              <p><strong>Теги:</strong> {selectedTaskDetail.tags.join(', ')}</p>
-            </div>
-            <button onClick={() => setSelectedTaskDetail(null)} className={styles.closeButton}>
-              Закрыть
-            </button>
-          </div>
         </div>
       )}
     </div>

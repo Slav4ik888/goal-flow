@@ -7,15 +7,16 @@ import { editTask } from '@entities/task';
 import { startTimeEntry, stopTimeEntryThunk, fetchActiveTimeEntry } from '@entities/time-entry';
 import { TaskTimer } from '@features/time-tracking';
 import styles from './index.module.scss';
+import { ManualTimeModal } from '@features/time-tracking/ui/manual-time-modal';
 
 
 
 interface TaskCardProps {
   task: Task;
+  onDoubleClick?: (task: Task) => void;
   onEdit: () => void;
   onDelete: () => void;
   onStatusChange: (status: TaskStatus) => void;
-  onClick: () => void;
 }
 
 const priorityColors: Record<Priority, string> = {
@@ -32,15 +33,29 @@ const priorityLabels: Record<Priority, string> = {
   P3: 'Низкий',
 };
 
-export const TaskCard: React.FC<TaskCardProps> = ({ task, onEdit, onDelete, onStatusChange, onClick }) => {
+export const TaskCard: React.FC<TaskCardProps> = ({ task, onEdit, onDelete, onStatusChange, onDoubleClick }) => {
   const dispatch = useAppDispatch();
   const activeTimeEntry = useAppSelector(state => state.timeEntries.activeTimeEntry);
   const [isExpanded, setIsExpanded] = useState(false);
   const isTimerRunning = activeTimeEntry?.taskId === task.id;
 
-  const handleTaskClick = () => {
-    if (onClick) {
-      onClick();
+  const [showMenu, setShowMenu] = useState(false);
+  const [showTimeModal, setShowTimeModal] = useState(false);
+
+  const handleManualTimeSave = async (seconds: number) => {
+    await handleTimeUpdate(seconds);
+    setShowTimeModal(false);
+  };
+  
+  const handleDoubleClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    // Предотвращаем открытие при клике на таймер
+    const target = e.target as HTMLElement;
+    if (target.closest('.timer')) {
+      return;
+    }
+    if (onDoubleClick) {
+      onDoubleClick(task);
     }
   };
   
@@ -91,117 +106,123 @@ export const TaskCard: React.FC<TaskCardProps> = ({ task, onEdit, onDelete, onSt
   const isOverdue = task.dueDate && task.dueDate < Date.now() && task.status !== 'done';
 
   return (
-    <div
-      className={`${styles.card} ${styles[task.status]} ${isExpanded ? styles.expanded : ''}`}
-      onDoubleClick={handleTaskClick}
-    >
-      <div className={styles.mainRow}>
-        <button 
-          className={styles.statusButton}
-          title="Перевести задачу на следующий этап"
-          onClick={(e) => {
-            e.stopPropagation();
-            const nextStatus: Record<TaskStatus, TaskStatus> = {
-              'todo': 'in-progress',
-              'in-progress': 'done',
-              'done': 'todo'
-            };
-            onStatusChange(nextStatus[task.status]);
-          }}
-        >
-          <span className={styles.statusIcon}>{getStatusIcon()}</span>
-        </button>
+    <>
+      <div
+        className={`${styles.card} ${styles[task.status]} ${isExpanded ? styles.expanded : ''}`}
+        onDoubleClick={handleDoubleClick}
+      >
+        <div className={styles.mainRow}>
+          <button 
+            className={styles.statusButton}
+            title="Перевести задачу на следующий этап"
+            onClick={(e) => {
+              e.stopPropagation();
+              const nextStatus: Record<TaskStatus, TaskStatus> = {
+                'todo': 'in-progress',
+                'in-progress': 'done',
+                'done': 'todo'
+              };
+              onStatusChange(nextStatus[task.status]);
+            }}
+          >
+            <span className={styles.statusIcon}>{getStatusIcon()}</span>
+          </button>
 
-        <div className={styles.content}>
-          <div className={styles.titleRow}>
-            <h3 className={styles.title}>{task.title}</h3>
-            <div 
-              className={styles.priorityBadge} 
-              style={{ backgroundColor: priorityColors[task.priority] }}
-              title={priorityLabels[task.priority]}
-            >
-              {task.priority}
+          <div className={styles.content}>
+            <div className={styles.titleRow}>
+              <h3 className={styles.title}>{task.title}</h3>
+              <div 
+                className={styles.priorityBadge} 
+                style={{ backgroundColor: priorityColors[task.priority] }}
+                title={priorityLabels[task.priority]}
+              >
+                {task.priority}
+              </div>
+            </div>
+            
+            <div className={styles.meta}>
+              {task.projectId && (
+                <span className={styles.metaItem}>📁 Проект</span>
+              )}
+              {task.goalId && (
+                <span className={styles.metaItem}>🎯 Цель</span>
+              )}
+              {task.dueDate && (
+                <span className={`${styles.metaItem} ${isOverdue ? styles.overdue : ''}`}>
+                  📅 {formatDate(task.dueDate)}
+                  {isOverdue && ' (просрочено)'}
+                </span>
+              )}
+              {task.tags.length > 0 && (
+                <div className={styles.tags}>
+                  {task.tags.slice(0, 3).map(tag => (
+                    <span key={tag} className={styles.tag}>#{tag}</span>
+                  ))}
+                  {task.tags.length > 3 && <span className={styles.tag}>+{task.tags.length - 3}</span>}
+                </div>
+              )}
             </div>
           </div>
-          
-          <div className={styles.meta}>
-            {task.projectId && (
-              <span className={styles.metaItem}>📁 Проект</span>
-            )}
-            {task.goalId && (
-              <span className={styles.metaItem}>🎯 Цель</span>
-            )}
-            {task.dueDate && (
-              <span className={`${styles.metaItem} ${isOverdue ? styles.overdue : ''}`}>
-                📅 {formatDate(task.dueDate)}
-                {isOverdue && ' (просрочено)'}
-              </span>
-            )}
-            {task.tags.length > 0 && (
-              <div className={styles.tags}>
-                {task.tags.slice(0, 3).map(tag => (
-                  <span key={tag} className={styles.tag}>#{tag}</span>
-                ))}
-                {task.tags.length > 3 && <span className={styles.tag}>+{task.tags.length - 3}</span>}
+
+          <div className={styles.actions}>
+            <TaskTimer 
+              taskId={task.id}
+              taskTitle={task.title}
+              initialSeconds={task.timeSpentSeconds}
+              onUpdate={handleTimeUpdate}
+              isRunning={isTimerRunning}
+              onStartStop={(e: React.MouseEvent<Element, MouseEvent>) => handleStartTimer(e)}
+            />
+            
+            {/* Кнопка меню с тремя точками */}
+            <div className={styles.menuContainer}>
+              <button 
+                className={styles.menuButton}
+                onClick={() => setShowMenu(!showMenu)}
+                title="Дополнительные действия"
+              >
+                ⋮
+              </button>
+              {showMenu && (
+                <div className={styles.dropdownMenu}>
+                  <button onClick={() => { setShowTimeModal(true); setShowMenu(false); }}>
+                    ✏️ Ручной ввод времени
+                  </button>
+                  <button onClick={onEdit}>✎ Редактировать</button>
+                  <button onClick={onDelete} className={styles.danger}>🗑 Удалить</button>
+                </div>
+              )}
+            </div>
+            
+            <button className={styles.iconButton} onClick={onEdit} title="Редактировать">
+              ✎
+            </button>
+            
+            <button className={`${styles.iconButton} ${styles.deleteButton}`} onClick={onDelete} title="Удалить">
+              ×
+            </button>
+          </div>
+        </div>
+
+        {isExpanded && task.description && (
+          <div className={styles.description}>
+            <p>{task.description}</p>
+            {task.estimatedHours && (
+              <div className={styles.estimate}>
+                ⏱ Оценка: {task.estimatedHours} ч
               </div>
             )}
           </div>
-        </div>
-
-        <div className={styles.actions}>
-          <TaskTimer 
-            taskId={task.id}
-            initialSeconds={task.timeSpentSeconds}
-            onUpdate={handleTimeUpdate}
-            isRunning={isTimerRunning}
-            onStartStop={handleStartTimer}
-          />
-          
-          <button
-            className={styles.iconButton}
-            title="Подробнее"
-            onClick={(e) => {
-              e.stopPropagation();
-              setIsExpanded(!isExpanded)
-            }}
-          >
-            {isExpanded ? '▲' : '▼'}
-          </button>
-          
-          <button
-            className={styles.iconButton}
-            title="Редактировать"
-            onClick={(e) => {
-              e.stopPropagation();
-              onEdit();
-            }}
-          >
-            ✎
-          </button>
-          
-          <button
-            className={`${styles.iconButton} ${styles.deleteButton}`}
-            title="Удалить"
-            onClick={(e) => {
-              e.stopPropagation();
-              onDelete();
-            }}
-          >
-            ×
-          </button>
-        </div>
+        )}
       </div>
-
-      {isExpanded && task.description && (
-        <div className={styles.description}>
-          <p>{task.description}</p>
-          {task.estimatedHours && (
-            <div className={styles.estimate}>
-              ⏱ Оценка: {task.estimatedHours} ч
-            </div>
-          )}
-        </div>
-      )}
-    </div>
+      
+      <ManualTimeModal
+        isOpen={showTimeModal}
+        taskTitle={task.title}
+        currentSeconds={task.timeSpentSeconds}
+        onSave={handleManualTimeSave}
+        onClose={() => setShowTimeModal(false)}
+      />
+    </>
   );
 };

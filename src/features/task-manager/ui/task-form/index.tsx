@@ -8,10 +8,30 @@ import styles from './index.module.scss';
 
 
 interface TaskFormProps {
-  initialData?: any;
+  initialData?: {
+    title?: string;
+    description?: string;
+    priority?: Priority;
+    status?: TaskStatus;
+    projectId?: string;
+    goalId?: string;
+    dueDate?: number;
+    estimatedHours?: number;
+    tags?: string[];
+  };
   projects: Project[];
   goals: Goal[];
-  onSubmit: (data: any) => void;
+  onSubmit: (data: {
+    title: string;
+    description?: string;
+    priority: Priority;
+    status: TaskStatus;
+    projectId?: string;
+    goalId?: string;
+    dueDate?: number;
+    estimatedHours?: number;
+    tags: string[];
+  }) => void;
   onCancel: () => void;
 }
 
@@ -22,6 +42,7 @@ export const TaskForm: React.FC<TaskFormProps> = ({
   onSubmit, 
   onCancel 
 }) => {
+  // В состоянии храним строки для полей ввода
   const [formData, setFormData] = useState({
     title: initialData?.title || '',
     description: initialData?.description || '',
@@ -30,19 +51,34 @@ export const TaskForm: React.FC<TaskFormProps> = ({
     projectId: initialData?.projectId || '',
     goalId: initialData?.goalId || '',
     dueDate: initialData?.dueDate ? new Date(initialData.dueDate).toISOString().split('T')[0] : '',
-    estimatedHours: initialData?.estimatedHours || '',
+    estimatedHours: initialData?.estimatedHours?.toString() || '', // <-- number -> string
     tags: initialData?.tags?.join(', ') || '',
   });
 
+  // Находим выбранный проект и его цель
+  const selectedProject = projects.find(p => p.id === formData.projectId);
+  const preselectedGoal = initialData?.goalId ? goals.find(g => g.id === initialData.goalId) : null;
+  
+  // Если цель предустановлена из проекта
+  const isGoalPreselected = !!initialData?.goalId && !formData.goalId;
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Преобразуем строковые значения в правильные типы
     onSubmit({
-      ...formData,
+      title: formData.title.trim(),
+      description: formData.description.trim() || undefined,
+      priority: formData.priority as Priority,
+      status: formData.status as TaskStatus,
+      projectId: formData.projectId || undefined,
+      goalId: formData.goalId || initialData?.goalId || undefined,
       dueDate: formData.dueDate ? new Date(formData.dueDate).getTime() : undefined,
-      estimatedHours: formData.estimatedHours ? parseFloat(formData.estimatedHours) : undefined,
-      tags: formData.tags.split(',').map((t: string) => t.trim()).filter((t: any) => t),
+      estimatedHours: formData.estimatedHours ? parseFloat(formData.estimatedHours) : undefined, // <-- string -> number
+      tags: formData.tags.split(',').map(t => t.trim()).filter(t => t),
     });
   };
+
 
   return (
     <form onSubmit={handleSubmit} className={styles.form}>
@@ -104,12 +140,22 @@ export const TaskForm: React.FC<TaskFormProps> = ({
           <label className={styles.label}>Проект</label>
           <select
             value={formData.projectId}
-            onChange={e => setFormData({ ...formData, projectId: e.target.value })}
+            onChange={e => {
+              const newProjectId = e.target.value;
+              const newProject = projects.find(p => p.id === newProjectId);
+              setFormData({ 
+                ...formData, 
+                projectId: newProjectId,
+                goalId: newProject?.goalId || '',
+              });
+            }}
             className={styles.select}
           >
             <option value="">Без проекта</option>
             {projects.map(project => (
-              <option key={project.id} value={project.id}>{project.title}</option>
+              <option key={project.id} value={project.id}>
+                {project.title}
+              </option>
             ))}
           </select>
         </div>
@@ -120,14 +166,38 @@ export const TaskForm: React.FC<TaskFormProps> = ({
             value={formData.goalId}
             onChange={e => setFormData({ ...formData, goalId: e.target.value })}
             className={styles.select}
+            disabled={!!initialData?.goalId && !formData.goalId}
           >
             <option value="">Без цели</option>
             {goals.filter(g => g.status === 'active').map(goal => (
-              <option key={goal.id} value={goal.id}>{goal.title}</option>
+              <option key={goal.id} value={goal.id}>
+                {goal.title}
+              </option>
             ))}
           </select>
         </div>
       </div>
+
+      {/* Информационное сообщение о предустановленной цели */}
+      {isGoalPreselected && preselectedGoal && (
+        <div className={styles.infoMessage}>
+          <span className={styles.infoIcon}>ℹ️</span>
+          <span>
+            Задача будет привязана к цели <strong>"{preselectedGoal.title}"</strong> 
+            (из выбранного проекта)
+          </span>
+        </div>
+      )}
+
+      {/* Информация о цели, которая автоматически подставилась при выборе проекта */}
+      {formData.projectId && formData.goalId && !initialData?.goalId && (
+        <div className={styles.infoMessage}>
+          <span className={styles.infoIcon}>🔗</span>
+          <span>
+            Цель автоматически привязана из выбранного проекта
+          </span>
+        </div>
+      )}
 
       <div className={styles.row}>
         <div className={styles.field}>
@@ -169,7 +239,7 @@ export const TaskForm: React.FC<TaskFormProps> = ({
           Отмена
         </button>
         <button type="submit" className={styles.submitButton}>
-          {initialData ? 'Сохранить' : 'Создать задачу'}
+          {initialData?.title ? 'Сохранить' : 'Создать задачу'}
         </button>
       </div>
     </form>
