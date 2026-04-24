@@ -1,51 +1,59 @@
 // src/features/time-tracking/ui/task-timer/index.tsx
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import styles from './index.module.scss';
-import { ManualTimeModal } from '../manual-time-modal';
 
 
 
 interface TaskTimerProps {
   taskId: string;
-  taskTitle?: string;
   initialSeconds: number;
   onUpdate: (seconds: number) => void;
   isRunning: boolean;
   onStartStop: (e: any) => void;
+  onManualTimeOpen: () => void;
 }
 
 export const TaskTimer: React.FC<TaskTimerProps> = ({ 
-  taskTitle,
   initialSeconds, 
   onUpdate, 
   isRunning, 
+  onManualTimeOpen,
   onStartStop 
 }) => {
   const [displaySeconds, setDisplaySeconds] = useState(initialSeconds);
-  const [isModalOpen, setIsModalOpen] = useState(false);
 
-  useEffect(() => {
-    let interval: NodeJS.Timeout;
-    if (isRunning) {
-      interval = setInterval(() => {
-        setDisplaySeconds(prev => prev + 1);
-      }, 1000);
-    }
-    return () => clearInterval(interval);
-  }, [isRunning]);
-
-  useEffect(() => {
-    if (!isRunning && displaySeconds !== initialSeconds) {
-      onUpdate(displaySeconds);
-    }
-  }, [isRunning, displaySeconds, initialSeconds, onUpdate]);
-
+  // Обновляем displaySeconds только если изменился initialSeconds И таймер НЕ запущен
   useEffect(() => {
     if (!isRunning) {
       setDisplaySeconds(initialSeconds);
     }
   }, [initialSeconds, isRunning]);
+
+  // Таймер: увеличиваем displaySeconds каждую секунду
+  useEffect(() => {
+    if (!isRunning) return;
+    
+    const interval = setInterval(() => {
+      setDisplaySeconds(prev => prev + 1);
+    }, 1000);
+    
+    return () => clearInterval(interval);
+  }, [isRunning]);
+
+  // Сохраняем изменения ТОЛЬКО когда таймер останавливается
+  // Используем useRef чтобы сохранить предыдущее состояние
+  const prevIsRunning = useRef(isRunning);
+  
+  useEffect(() => {
+    // Таймер только что остановился
+    if (prevIsRunning.current === true && isRunning === false) {
+      if (displaySeconds !== initialSeconds) {
+        onUpdate(displaySeconds);
+      }
+    }
+    prevIsRunning.current = isRunning;
+  }, [isRunning, displaySeconds, initialSeconds, onUpdate]);
 
   const formatTime = (totalSeconds: number) => {
     const hours = Math.floor(totalSeconds / 3600);
@@ -56,41 +64,22 @@ export const TaskTimer: React.FC<TaskTimerProps> = ({
 
   const handleDisplayClick = () => {
     if (!isRunning) {
-      setIsModalOpen(true);
+      onManualTimeOpen();
     }
-  };
-
-  const handleManualSave = (seconds: number) => {
-    setDisplaySeconds(seconds);
-    onUpdate(seconds);
   };
 
   
   return (
-    <>
-      <div className={`${styles.timer} timer`}> 
-        <span 
-          className={`${styles.display} ${!isRunning ? styles.editable : ''}`}
-          onClick={handleDisplayClick}
-          title={!isRunning ? "Кликните для ручного ввода времени" : ""}
-        >
-          {formatTime(displaySeconds)}
-        </span>
-        <button 
-          onClick={onStartStop} 
-          className={isRunning ? styles.stop : styles.play}
-        >
-          {isRunning ? '⏸' : '▶'}
-        </button>
-      </div>
-      
-      <ManualTimeModal
-        isOpen={isModalOpen}
-        taskTitle={taskTitle || 'Задача'}
-        currentSeconds={displaySeconds}
-        onSave={handleManualSave}
-        onClose={() => setIsModalOpen(false)}
-      />
-    </>
+    <div className={`${styles.timer} timer`}> 
+      <span 
+        className={`${styles.display} ${!isRunning ? styles.editable : ''}`}
+        onClick={handleDisplayClick}
+      >
+        {formatTime(displaySeconds)}
+      </span>
+      <button onClick={onStartStop} className={isRunning ? styles.stop : styles.play}>
+        {isRunning ? '⏸' : '▶'}
+      </button>
+    </div>
   );
 };

@@ -3,18 +3,18 @@ import { createRoot } from 'react-dom/client'
 import { App } from '@app/index'
 import { StoreProvider } from '@app/providers/store'
 import './index.css'
-import { BrowserRouter } from 'react-router-dom'
+import { HashRouter } from 'react-router-dom'
 
 
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <StoreProvider>
-      <BrowserRouter>
+      <HashRouter>
         <App />
-      </BrowserRouter>
+      </HashRouter>
     </StoreProvider>
   </StrictMode>
 )
   
-// git add . && git commit -m "fixed vite config" && git push -u origin main
+// git add . && git commit -m "fixed ManualTimeModal" && git push -u origin main

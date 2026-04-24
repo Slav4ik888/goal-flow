@@ -10,6 +10,7 @@ import { FilterBar } from '@widgets/filters';
 import { parseFilterQuery, filterTasks } from '@features/filters/lib/query-parser';
 import { uiActions } from '@entities/ui';
 import styles from './index.module.scss';
+import { ManualTimeModal } from '#features/time-tracking/ui/manual-time-modal/index.tsx';
 
 
 
@@ -24,7 +25,19 @@ export const TasksSpace: React.FC = () => {
   const [showForm, setShowForm] = useState(false);
   const [editingTask, setEditingTask] = useState<Task | null>(null);
   const [selectedTaskDetail, setSelectedTaskDetail] = useState<Task | null>(null);
-
+  const [manualTimeData, setManualTimeData] = useState<{
+    isOpen: boolean;
+    taskId: string;
+    taskTitle: string;
+    currentSeconds: number;
+  }>({
+    isOpen: false,
+    taskId: '',
+    taskTitle: '',
+    currentSeconds: 0,
+  });
+  
+  
   useEffect(() => {
     dispatch(fetchTasks());
     dispatch(fetchProjects());
@@ -78,6 +91,16 @@ export const TasksSpace: React.FC = () => {
       dispatch(uiActions.goToAllTasks()); // Сбрасываем фильтр и показываем все задачи
     }
   };
+  
+  
+  const handleManualTimeSave = async (seconds: number) => {
+    await dispatch(editTask({ 
+      id: manualTimeData.taskId, 
+      updates: { timeSpentSeconds: seconds } 
+    }));
+    setManualTimeData(prev => ({ ...prev, isOpen: false }));
+  };
+  
 
   const todoTasks = filteredTasks.filter(t => t.status === 'todo');
   const inProgressTasks = filteredTasks.filter(t => t.status === 'in-progress');
@@ -257,6 +280,12 @@ export const TasksSpace: React.FC = () => {
                 onEdit={() => setEditingTask(task)}
                 onDelete={() => handleDeleteTask(task.id)}
                 onStatusChange={(status) => handleUpdateTask(task.id, { status })}
+                onManualTimeOpen={() => setManualTimeData({
+                  isOpen: true,
+                  taskId: task.id,
+                  taskTitle: task.title,
+                  currentSeconds: task.timeSpentSeconds,
+                })}
               />
             ))}
           </div>
@@ -277,6 +306,12 @@ export const TasksSpace: React.FC = () => {
                 onEdit={() => setEditingTask(task)}
                 onDelete={() => handleDeleteTask(task.id)}
                 onStatusChange={(status) => handleUpdateTask(task.id, { status })}
+                onManualTimeOpen={() => setManualTimeData({
+                  isOpen: true,
+                  taskId: task.id,
+                  taskTitle: task.title,
+                  currentSeconds: task.timeSpentSeconds,
+                })}
               />
             ))}
           </div>
@@ -297,6 +332,12 @@ export const TasksSpace: React.FC = () => {
                 onEdit={() => setEditingTask(task)}
                 onDelete={() => handleDeleteTask(task.id)}
                 onStatusChange={(status) => handleUpdateTask(task.id, { status })}
+                onManualTimeOpen={() => setManualTimeData({
+                  isOpen: true,
+                  taskId: task.id,
+                  taskTitle: task.title,
+                  currentSeconds: task.timeSpentSeconds,
+                })}
               />
             ))}
           </div>
@@ -308,6 +349,17 @@ export const TasksSpace: React.FC = () => {
           {filterQuery || searchQuery ? 'Ничего не найдено' : 'Нет задач. Создайте первую задачу!'}
         </div>
       )}
+      
+      {
+        manualTimeData.isOpen && <ManualTimeModal
+          isOpen={manualTimeData.isOpen}
+          taskTitle={manualTimeData.taskTitle}
+          currentSeconds={manualTimeData.currentSeconds}
+          onSave={handleManualTimeSave}
+          onClose={() => setManualTimeData(prev => ({ ...prev, isOpen: false }))}
+        />
+      }
+      
     </div>
   );
 };

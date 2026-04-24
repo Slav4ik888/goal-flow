@@ -7,7 +7,6 @@ import { editTask } from '@entities/task';
 import { startTimeEntry, stopTimeEntryThunk, fetchActiveTimeEntry } from '@entities/time-entry';
 import { TaskTimer } from '@features/time-tracking';
 import styles from './index.module.scss';
-import { ManualTimeModal } from '@features/time-tracking/ui/manual-time-modal';
 
 
 
@@ -17,6 +16,7 @@ interface TaskCardProps {
   onEdit: () => void;
   onDelete: () => void;
   onStatusChange: (status: TaskStatus) => void;
+  onManualTimeOpen: () => void;
 }
 
 const priorityColors: Record<Priority, string> = {
@@ -33,20 +33,12 @@ const priorityLabels: Record<Priority, string> = {
   P3: 'Низкий',
 };
 
-export const TaskCard: React.FC<TaskCardProps> = ({ task, onEdit, onDelete, onStatusChange, onDoubleClick }) => {
+export const TaskCard: React.FC<TaskCardProps> = ({ task, onEdit, onDelete, onStatusChange, onDoubleClick, onManualTimeOpen }) => {
   const dispatch = useAppDispatch();
   const activeTimeEntry = useAppSelector(state => state.timeEntries.activeTimeEntry);
   const [isExpanded] = useState(false);
   const isTimerRunning = activeTimeEntry?.taskId === task.id;
 
-  const [showMenu, setShowMenu] = useState(false);
-  const [showTimeModal, setShowTimeModal] = useState(false);
-
-  const handleManualTimeSave = async (seconds: number) => {
-    await handleTimeUpdate(seconds);
-    setShowTimeModal(false);
-  };
-  
   const handleDoubleClick = (e: React.MouseEvent) => {
     e.stopPropagation();
     // Предотвращаем открытие при клике на таймер
@@ -167,32 +159,12 @@ export const TaskCard: React.FC<TaskCardProps> = ({ task, onEdit, onDelete, onSt
           <div className={styles.actions}>
             <TaskTimer 
               taskId={task.id}
-              taskTitle={task.title}
               initialSeconds={task.timeSpentSeconds}
               onUpdate={handleTimeUpdate}
               isRunning={isTimerRunning}
+              onManualTimeOpen={onManualTimeOpen}
               onStartStop={(e: React.MouseEvent<Element, MouseEvent>) => handleStartTimer(e)}
             />
-            
-            {/* Кнопка меню с тремя точками */}
-            <div className={styles.menuContainer}>
-              <button 
-                className={styles.menuButton}
-                onClick={() => setShowMenu(!showMenu)}
-                title="Дополнительные действия"
-              >
-                ⋮
-              </button>
-              {showMenu && (
-                <div className={styles.dropdownMenu}>
-                  <button onClick={() => { setShowTimeModal(true); setShowMenu(false); }}>
-                    ✏️ Ручной ввод времени
-                  </button>
-                  <button onClick={onEdit}>✎ Редактировать</button>
-                  <button onClick={onDelete} className={styles.danger}>🗑 Удалить</button>
-                </div>
-              )}
-            </div>
             
             <button className={styles.iconButton} onClick={onEdit} title="Редактировать">
               ✎
@@ -215,14 +187,6 @@ export const TaskCard: React.FC<TaskCardProps> = ({ task, onEdit, onDelete, onSt
           </div>
         )}
       </div>
-      
-      <ManualTimeModal
-        isOpen={showTimeModal}
-        taskTitle={task.title}
-        currentSeconds={task.timeSpentSeconds}
-        onSave={handleManualTimeSave}
-        onClose={() => setShowTimeModal(false)}
-      />
     </>
   );
 };
